@@ -87,10 +87,51 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
   // Detect expected output format from a prompt/description
   const detectFormat = useCallback((text: string, description?: string): 'xml' | 'json' | null => {
     if (!text) return null;
-    const containsXml = /<[A-Za-z][\w:-]*>/.test(text);
-    const mentionsJson = text.toLowerCase().includes('json') || (description || '').toLowerCase().includes('json');
-    if (containsXml) return 'xml';
+
+    const lowerText = text.toLowerCase();
+    const lowerDesc = (description || '').toLowerCase();
+
+    // Check for JSON output requirement
+    const mentionsJson = lowerText.includes('json') || lowerDesc.includes('json');
     if (mentionsJson) return 'json';
+
+    // Check for XML output requirement (not just any XML tags)
+    // Look for phrases that indicate XML output is expected:
+    // - "put [it/each/them/...] in [separate/...] <tag> tags"
+    // - "write [it/...] in <tag> tags"
+    // - "in <tag> [and <tag>] [XML] tags" (but not "in <tag> format/tags in the...")
+    // - "wrap [it/...] in <tag>"
+    // - "return [it/...] in <tag>"
+    // - "use <tag> tags"
+    // - "output in <tag>"
+    // - "in this format: <tag>..." (example format)
+    const xmlOutputPatterns = [
+      // "put X in Y <tag> tags" - support modifiers like "separate", "different"
+      /put\s+(?:it|each|them|the\s+\w+|[a-z]+)\s+in\s+(?:separate|different|distinct|\w+\s+)?<[^>]+>\s+tags?/i,
+
+      // "write X in <tag> tags"
+      /write\s+(?:it|each|them|the\s+\w+|[a-z]+)?\s*in\s+<[^>]+>\s+tags?/i,
+
+      // "in <tag> [and <tag>] XML tags" - avoid matching "in <tag> format/tags in..."
+      // Must end with "tags" or "XML tags", not followed by words like "in/format"
+      /in\s+<[^>]+>(?:\s+and\s+<[^>]+>)?\s+(?:XML\s+)?tags?(?:\s*[,.]|$)/i,
+
+      // "wrap/return/output X in <tag>"
+      /(?:wrap|return|output)\s+(?:it|each|them|the\s+\w+|[a-z]+)?\s*in\s+<[^>]+>/i,
+
+      // "use <tag> tags" - but avoid "do not use" or "don't use"
+      /(?<!(?:do\s+not|don't|avoid)\s+)use\s+<[^>]+>\s+tags?/i,
+
+      // "in this format:" followed by XML example
+      /in\s+this\s+format\s*:\s*[^<]*<[A-Za-z][\w:-]*>/i,
+
+      // "format: <tag>..." or "format ... <tag> tags"
+      /format\s*:\s*[^<]*<[A-Za-z][\w:-]*>|format[^<]*<[^>]+>\s+tags?/i
+    ];
+
+    const requiresXmlOutput = xmlOutputPatterns.some(pattern => pattern.test(text));
+    if (requiresXmlOutput) return 'xml';
+
     return null;
   }, []);
 
@@ -141,7 +182,9 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
     [detectFormat, promptForFormat, example.description]
   );
 
-  const effectiveExpectedFormat = dynamicExpectedFormat || providedUI?.expectedFormat || resolvedUI.expectedFormat || null;
+  // Always use dynamic format detection based on current prompt (including null = no format required)
+  // This ensures that when users switch variations, the format validation updates correctly
+  const effectiveExpectedFormat = dynamicExpectedFormat;
 
   // Extract template variables from a prompt
   const extractTemplateVariables = (prompt: string): string[] => {

@@ -4,6 +4,11 @@ export const fundamentalsPlayground: PlaygroundScenario[] = [
   {
     id: 'playground-chapter-1',
     title: 'playground.fundamentals.basicStructure.title',
+    ui: {
+      archetype: 'basic',
+      allowSystemPrompt: false,
+      allowTemplate: false
+    },
     examples: [
       {
         name: 'playground.fundamentals.basicStructure.creativeCounting.name',
@@ -79,6 +84,11 @@ export const fundamentalsPlayground: PlaygroundScenario[] = [
   {
     id: 'playground-chapter-2',
     title: 'playground.fundamentals.clearCommunication.title',
+    ui: {
+      archetype: 'basic',
+      allowSystemPrompt: false,
+      allowTemplate: false
+    },
     examples: [
       {
         name: 'playground.fundamentals.clearCommunication.languageExperiment.name',
@@ -154,6 +164,10 @@ export const fundamentalsPlayground: PlaygroundScenario[] = [
   {
     id: 'playground-chapter-3',
     title: 'playground.fundamentals.rolePrompting.title',
+    ui: {
+      archetype: 'role',
+      allowSystemPrompt: true
+    },
     examples: [
       {
         name: 'playground.fundamentals.rolePrompting.roleComparison.name',

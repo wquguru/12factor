@@ -5,6 +5,9 @@ export const fundamentalsPractice: PracticeExample[] = [
     id: 'chapter1-basic-structure',
     title: 'practiceExercises.fundamentals.chapter1BasicStructure.title',
     description: 'practiceExercises.fundamentals.chapter1BasicStructure.description',
+    ui: {
+      archetype: 'basic'
+    },
     userPrompt: 'Count to three',
     expectedOutput: 'practiceExercises.fundamentals.chapter1BasicStructure.expectedOutput',
     hints: [
@@ -29,6 +32,10 @@ export const fundamentalsPractice: PracticeExample[] = [
     id: 'chapter1-system-prompt',
     title: 'practiceExercises.fundamentals.chapter1SystemPrompt.title',
     description: 'practiceExercises.fundamentals.chapter1SystemPrompt.description',
+    ui: {
+      archetype: 'role',
+      allowSystemPrompt: true
+    },
     systemPrompt: 'You are a 3 year old child. Respond with the excitement, curiosity, and simple language that a 3-year-old would use.',
     userPrompt: 'How big is the sky?',
     expectedOutput: 'practiceExercises.fundamentals.chapter1SystemPrompt.expectedOutput',
@@ -80,7 +87,8 @@ export const fundamentalsPractice: PracticeExample[] = [
         prompt: 'Hello Claude, how are you? Please respond in both English and Spanish.',
         explanation: 'practiceExercises.fundamentals.chapter2Spanish.variations.bilingualResponse.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'basic' }
   },
   {
     id: 'chapter2-basketball',
@@ -109,7 +117,8 @@ export const fundamentalsPractice: PracticeExample[] = [
         prompt: 'Who is the best basketball player of all time? Give only the name and one reason.',
         explanation: 'practiceExercises.fundamentals.chapter2Basketball.variations.specificFormat.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'basic' }
   },
   {
     id: 'chapter2-long-story',
@@ -139,7 +148,8 @@ export const fundamentalsPractice: PracticeExample[] = [
         prompt: 'Write a detailed story of at least 1000 words about a robot learning to paint, including character development and multiple scenes.',
         explanation: 'practiceExercises.fundamentals.chapter2LongStory.variations.longerStory.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'basic' }
   },
   {
     id: 'chapter3-math-logic',
@@ -172,6 +182,7 @@ export const fundamentalsPractice: PracticeExample[] = [
         systemPrompt: 'You are a student learning algebra. Approach this problem with curiosity and explain your thinking process step by step.',
         explanation: 'practiceExercises.fundamentals.chapter3MathLogic.variations.studentRole.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'role', allowSystemPrompt: true }
   }
 ];

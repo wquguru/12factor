@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { 
   PlayIcon, 
@@ -9,6 +9,18 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+
+type UIArchetype = 'basic' | 'role' | 'template' | 'structured' | 'few-shot' | 'chaining';
+
+interface UIConfig {
+  archetype?: UIArchetype;
+  allowSystemPrompt?: boolean;
+  allowTemplate?: boolean;
+  allowPrefill?: boolean;
+  allowChaining?: boolean;
+  expectedFormat?: 'xml' | 'json' | null;
+  showExamplesPane?: boolean;
+}
 
 interface PromptExample {
   id: string;
@@ -24,14 +36,16 @@ interface PromptExample {
     systemPrompt?: string;
     explanation: string;
   }[];
+  ui?: UIConfig;
 }
 
 interface InteractivePromptEditorProps {
   example: PromptExample;
   mode?: 'playground' | 'practice';
+  ui?: PromptExample['ui'];
 }
 
-export default function InteractivePromptEditor({ example, mode = 'practice' }: InteractivePromptEditorProps) {
+export default function InteractivePromptEditor({ example, mode = 'practice', ui }: InteractivePromptEditorProps) {
   const tBase = useTranslations('promptEngineering');
   
   // Custom translation function to handle double brackets
@@ -55,12 +69,50 @@ export default function InteractivePromptEditor({ example, mode = 'practice' }: 
   const [promptTemplate, setPromptTemplate] = useState(mode === 'practice' ? '' : example.userPrompt);
   const [templateVariables, setTemplateVariables] = useState<Record<string, string>>({});
   const [hasTemplateVariables, setHasTemplateVariables] = useState(false);
+  const [prefill, setPrefill] = useState('');
   const [currentOutput, setCurrentOutput] = useState('');
+  const [formatCheck, setFormatCheck] = useState<{ kind: 'xml' | 'json' | null; status: 'valid' | 'invalid' | null; message?: string }>({ kind: null, status: null });
   const [isRunning, setIsRunning] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [selectedVariation, setSelectedVariation] = useState<number | null>(null);
   const [analysisResult, setAnalysisResult] = useState<'good' | 'needs-improvement' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [chainMode, setChainMode] = useState(false);
+  const [conversation, setConversation] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+
+  const providedUI: UIConfig | undefined = example.ui || ui;
+
+  const resolvedUI = useMemo<UIConfig>(() => {
+    const templateRegex = /\{\{[^}]+\}\}/;
+    const containsTemplate = templateRegex.test(example.userPrompt);
+    const containsXml = /<[A-Za-z][\w:-]*>/.test(example.userPrompt);
+    const mentionsJson = example.userPrompt.toLowerCase().includes('json') || example.description.toLowerCase().includes('json');
+    const mentionsChain = (example.title + example.description).toLowerCase().includes('chain');
+
+    const base: UIConfig = {
+      showExamplesPane: example.variations.length > 0,
+      allowSystemPrompt: Boolean(example.systemPrompt || example.variations.some(v => v.systemPrompt !== undefined)),
+      allowTemplate: containsTemplate,
+      allowPrefill: containsXml || mentionsJson,
+      expectedFormat: containsXml ? 'xml' : mentionsJson ? 'json' : null,
+      allowChaining: mentionsChain
+    };
+
+    const merged: UIConfig = { ...base };
+
+    if (providedUI) {
+      if (providedUI.archetype !== undefined) merged.archetype = providedUI.archetype;
+      if (providedUI.allowSystemPrompt !== undefined) merged.allowSystemPrompt = providedUI.allowSystemPrompt;
+      if (providedUI.allowTemplate !== undefined) merged.allowTemplate = providedUI.allowTemplate;
+      if (providedUI.allowPrefill !== undefined) merged.allowPrefill = providedUI.allowPrefill;
+      if (providedUI.allowChaining !== undefined) merged.allowChaining = providedUI.allowChaining;
+      if (providedUI.expectedFormat !== undefined) merged.expectedFormat = providedUI.expectedFormat;
+      if (providedUI.showExamplesPane !== undefined) merged.showExamplesPane = providedUI.showExamplesPane;
+    }
+
+    return merged;
+  }, [example.description, example.systemPrompt, example.title, example.userPrompt, example.variations, providedUI]);
 
   // Extract template variables from a prompt
   const extractTemplateVariables = (prompt: string): string[] => {
@@ -101,18 +153,23 @@ export default function InteractivePromptEditor({ example, mode = 'practice' }: 
   useEffect(() => {
     setSystemPrompt(mode === 'practice' ? '' : (example.systemPrompt || ''));
     setPromptTemplate(mode === 'practice' ? '' : example.userPrompt);
-    
+    setPrefill('');
+    setConversation([]);
+    setChainMode(resolvedUI.allowChaining ?? false);
+    setFormatCheck({ kind: null, status: null });
+    setShowAdvancedControls(false);
+
     // Check for template variables in the initial prompt
     const initialTemplate = mode === 'practice' ? '' : example.userPrompt;
     updateTemplateVariables(initialTemplate);
-    
+
     // Set initial user prompt
     setUserPrompt(mode === 'practice' ? '' : example.userPrompt);
     setCurrentOutput('');
     setAnalysisResult(null);
     setSelectedVariation(null);
     setError(null);
-  }, [example.id, example.systemPrompt, example.userPrompt, mode, updateTemplateVariables]);
+  }, [example.id, example.systemPrompt, example.userPrompt, mode, resolvedUI.allowChaining, updateTemplateVariables]);
 
   // Update user prompt when template or variables change
   useEffect(() => {
@@ -174,6 +231,8 @@ AI输出: ${truncatedOutput}
     setError(null);
     
     try {
+      const trimmedUserPrompt = userPrompt.trim();
+
       const response = await fetch('/api/llm', {
         method: 'POST',
         headers: {
@@ -181,7 +240,9 @@ AI输出: ${truncatedOutput}
         },
         body: JSON.stringify({
           systemPrompt: systemPrompt || undefined,
-          userPrompt: userPrompt.trim(),
+          userPrompt: trimmedUserPrompt,
+          prefill: prefill || undefined,
+          history: chainMode ? conversation : undefined,
           mode: mode
         }),
       });
@@ -194,12 +255,16 @@ AI输出: ${truncatedOutput}
       
       setCurrentOutput(data.response);
       
+      if (chainMode) {
+        setConversation(prev => [...prev, { role: 'user', content: trimmedUserPrompt }, { role: 'assistant', content: data.response }]);
+      }
+      
       // Get context from the current example for evaluation
       const currentContext = `${example.title}: ${example.description}`;
       
       // Use LLM evaluation
       try {
-        const evaluation = await evaluateWithLLM(data.response, systemPrompt, userPrompt, currentContext);
+        const evaluation = await evaluateWithLLM(data.response, systemPrompt, trimmedUserPrompt, currentContext);
         setAnalysisResult(evaluation);
       } catch (evaluationError) {
         console.error('Evaluation failed:', evaluationError);
@@ -235,8 +300,12 @@ AI输出: ${truncatedOutput}
     setPromptTemplate(initialTemplate);
     updateTemplateVariables(initialTemplate);
     setUserPrompt(mode === 'practice' ? '' : example.userPrompt);
+    setPrefill('');
+    setConversation([]);
+    setChainMode(false);
     setCurrentOutput('');
     setAnalysisResult(null);
+    setFormatCheck({ kind: null, status: null });
     setSelectedVariation(null);
     setError(null);
   };
@@ -255,10 +324,48 @@ AI输出: ${truncatedOutput}
         setSystemPrompt(variation.systemPrompt);
       }
     }
+    setPrefill('');
+    setConversation([]);
     
     setCurrentOutput('');
     setAnalysisResult(null);
+    setFormatCheck({ kind: null, status: null });
   };
+
+  // Validate output format when it changes
+  useEffect(() => {
+    if (!currentOutput || !resolvedUI.expectedFormat) {
+      setFormatCheck(prev => ({ ...prev, status: null, kind: resolvedUI.expectedFormat || null }));
+      return;
+    }
+    if (resolvedUI.expectedFormat === 'json') {
+      try {
+        JSON.parse(currentOutput);
+        setFormatCheck({ kind: 'json', status: 'valid' });
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'JSON parse error';
+        setFormatCheck({ kind: 'json', status: 'invalid', message: errorMessage });
+      }
+    } else if (resolvedUI.expectedFormat === 'xml') {
+      try {
+        if (typeof DOMParser === 'undefined') {
+          setFormatCheck({ kind: 'xml', status: null });
+          return;
+        }
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(currentOutput, 'application/xml');
+        const parseError = doc.querySelector('parsererror');
+        if (parseError) {
+          setFormatCheck({ kind: 'xml', status: 'invalid', message: parseError.textContent || 'XML parse error' });
+        } else {
+          setFormatCheck({ kind: 'xml', status: 'valid' });
+        }
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : 'XML parse error';
+        setFormatCheck({ kind: 'xml', status: 'invalid', message: errorMessage });
+      }
+    }
+  }, [currentOutput, resolvedUI.expectedFormat]);
 
   return (
     <div className="border border-stone-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 overflow-hidden">
@@ -302,39 +409,49 @@ AI输出: ${truncatedOutput}
         )}
 
         {/* Prompt Variations */}
-        <div className="mb-6">
-          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
-            📝 {t('tryDifferentVariations')}
-          </h4>
-          <div className="grid gap-2 md:grid-cols-2">
-            {example.variations.map((variation, index) => (
-              <button
-                key={index}
-                onClick={() => applyVariation(index)}
-                className={`p-3 text-left border rounded-lg transition-colors ${
-                  selectedVariation === index
-                    ? 'border-[#98a971] bg-[#98a971]/5 text-gray-900 dark:text-gray-100'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-[#98a971]/50 text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                <div className="font-medium text-sm mb-1">{variation.name}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{variation.explanation}</div>
-              </button>
-            ))}
+        {example.variations.length > 0 && (resolvedUI.showExamplesPane ?? true) && (
+          <div className="mb-6">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+              📝 {t('tryDifferentVariations')}
+            </h4>
+            <div className="grid gap-2 md:grid-cols-2">
+              {example.variations.map((variation, index) => (
+                <button
+                  key={index}
+                  onClick={() => applyVariation(index)}
+                  className={`p-3 text-left border rounded-lg transition-colors ${
+                    selectedVariation === index
+                      ? 'border-[#98a971] bg-[#98a971]/5 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-[#98a971]/50 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  <div className="font-medium text-sm mb-1">{variation.name}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{variation.explanation}</div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Editor */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Input */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              🎯 {t('editPrompt')}
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                🎯 {t('editPrompt')}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedControls(prev => !prev)}
+                className="text-xs text-[#98a971] hover:text-[#7a8259]"
+              >
+                {showAdvancedControls ? (t('hideAdvancedControls') || 'Hide advanced') : (t('showAdvancedControls') || 'Show advanced')}
+              </button>
+            </div>
             
             {/* System Prompt - show if exercise has one or if any variation has one */}
-            {(example.systemPrompt !== undefined || 
-              example.variations.some(v => v.systemPrompt !== undefined)) && (
+            {((resolvedUI.allowSystemPrompt ?? false) || showAdvancedControls || !!systemPrompt) && (
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('systemPrompt')}
@@ -350,6 +467,24 @@ AI输出: ${truncatedOutput}
                       : 'bg-white dark:bg-gray-800'
                   }`}
                 />
+              </div>
+            )}
+
+            {/* Prefill - Optional assistant seed to force opening tokens */}
+            {((resolvedUI.allowPrefill ?? false) || showAdvancedControls || !!prefill) && (
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('prefillLabel') || 'Prefill (optional)'}
+                </label>
+                <textarea
+                  value={prefill}
+                  onChange={(e) => setPrefill(e.target.value)}
+                  placeholder={t('prefillPlaceholder') || '<answer>'}
+                  className="w-full h-16 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-none font-mono"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {t('prefillHint') || 'Seed the assistant reply (e.g., start within XML/JSON tags).'}
+                </p>
               </div>
             )}
 
@@ -377,30 +512,48 @@ AI输出: ${truncatedOutput}
             </div>
 
             {/* Template Variables - Only show when template variables exist */}
-            {hasTemplateVariables && Object.keys(templateVariables).length > 0 && (
+            {((resolvedUI.allowTemplate ?? false) || showAdvancedControls) && hasTemplateVariables && Object.keys(templateVariables).length > 0 && (
               <div className="space-y-3">
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
                   {t('templateVariables')}
                 </label>
-                {Object.entries(templateVariables).map(([variable, value]) => (
-                  <div key={variable}>
-                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
-                      {variable}
-                    </label>
-                    <input
-                      type="text"
-                      value={value}
-                      onChange={(e) => {
-                        setTemplateVariables(prev => ({
-                          ...prev,
-                          [variable]: e.target.value
-                        }));
-                      }}
-                      placeholder={t('enterValue')}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent"
-                    />
-                  </div>
-                ))}
+                {Object.entries(templateVariables).map(([variable, value]) => {
+                  const isLongText = /DOCUMENT|HISTORY|EMAIL|TEXT|CODE|RESEARCH|CONTEXT|DATA|ARTICLE|PASSAGE|CONTENT|MESSAGE|INPUT/i.test(variable) || value.length > 120;
+                  return (
+                    <div key={variable}>
+                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        {variable}
+                      </label>
+                      {isLongText ? (
+                        <textarea
+                          rows={6}
+                          value={value}
+                          onChange={(e) => {
+                            setTemplateVariables(prev => ({
+                              ...prev,
+                              [variable]: e.target.value
+                            }));
+                          }}
+                          placeholder={t('enterValue')}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-y"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => {
+                            setTemplateVariables(prev => ({
+                              ...prev,
+                              [variable]: e.target.value
+                            }));
+                          }}
+                          placeholder={t('enterValue')}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -423,6 +576,36 @@ AI输出: ${truncatedOutput}
 
             {/* Controls */}
             <div className="space-y-3">
+              {/* Chain mode toggle */}
+              {((resolvedUI.allowChaining ?? false) || showAdvancedControls) && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                      <input
+                        type="checkbox"
+                        checked={chainMode}
+                        onChange={(e) => {
+                          setChainMode(e.target.checked);
+                          if (!e.target.checked) setConversation([]);
+                        }}
+                        className="w-4 h-4 text-[#98a971] border-gray-300 rounded focus:ring-1 focus:ring-[#98a971]"
+                      />
+                      {t('chainModeLabel') || 'Chaining mode (keep conversation)'}
+                    </label>
+                    <button
+                      onClick={() => setConversation([])}
+                      disabled={!conversation.length}
+                      className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
+                    >
+                      {t('clearConversation') || 'Clear'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {t('chainModeHint') || 'When enabled, each run appends to the conversation and is sent along with the next prompt.'}
+                  </p>
+                </>
+              )}
+
               {/* Error Display */}
               {error && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
@@ -452,6 +635,36 @@ AI输出: ${truncatedOutput}
                 </button>
               </div>
             </div>
+
+            {chainMode && (
+              <div className="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                  {t('conversationHistory') || 'Conversation history'}
+                </h5>
+                <div className="max-h-48 overflow-y-auto space-y-2">
+                  {conversation.length === 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {t('emptyConversation') || 'No previous turns yet.'}
+                    </p>
+                  )}
+                  {conversation.map((msg, index) => (
+                    <div
+                      key={`${msg.role}-${index}`}
+                      className={`p-2 rounded-lg text-xs whitespace-pre-wrap ${
+                        msg.role === 'user'
+                          ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                          : 'bg-[#f5f9f0] dark:bg-gray-700 border border-[#98a971]/40'
+                      }`}
+                    >
+                      <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+                        {msg.role === 'user' ? t('userTurn') || 'User' : t('assistantTurn') || 'Assistant'}
+                      </div>
+                      {msg.content}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Output */}
@@ -474,7 +687,25 @@ AI输出: ${truncatedOutput}
                   {analysisResult === 'good' ? t('goodPromptQuality') : t('canImprove')}
                 </div>
               )}
+              {formatCheck.kind && formatCheck.status && (
+                <div
+                  className={`ml-2 px-2 py-1 rounded-full text-[11px] ${
+                    formatCheck.status === 'valid'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                  }`}
+                >
+                  {formatCheck.status === 'valid'
+                    ? `${formatCheck.kind?.toUpperCase()} ${t('formatValid') || 'format valid'}`
+                    : `${formatCheck.kind?.toUpperCase()} ${t('formatInvalid') || 'format invalid'}`}
+                </div>
+              )}
             </div>
+            {formatCheck.status === 'invalid' && formatCheck.message && (
+              <p className="text-xs text-red-500 dark:text-red-300 mb-2">
+                {formatCheck.message}
+              </p>
+            )}
             
             <div className="h-48 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-y-auto">
               {isRunning ? (
@@ -494,6 +725,18 @@ AI输出: ${truncatedOutput}
                 </div>
               )}
             </div>
+            {chainMode && currentOutput && (
+              <button
+                onClick={() => {
+                  setPromptTemplate(currentOutput);
+                  updateTemplateVariables(currentOutput);
+                  setUserPrompt(currentOutput);
+                }}
+                className="mt-3 inline-flex items-center gap-2 text-xs text-[#98a971] hover:text-[#7a8259]"
+              >
+                {t('useAsNextPrompt') || 'Use response as next prompt'}
+              </button>
+            )}
           </div>
         </div>
 

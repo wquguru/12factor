@@ -24,6 +24,48 @@ export interface ExerciseData {
   hints: string | string[];
 }
 
+export type UIArchetype =
+  | 'basic'
+  | 'role'
+  | 'template'
+  | 'structured'
+  | 'few-shot'
+  | 'chaining';
+
+export interface UIConfig {
+  archetype?: UIArchetype;
+  allowSystemPrompt?: boolean;
+  allowTemplate?: boolean;
+  allowPrefill?: boolean;
+  allowChaining?: boolean;
+  expectedFormat?: 'xml' | 'json' | null;
+  showExamplesPane?: boolean;
+}
+
+export interface Variation {
+  name: string;
+  prompt: string;
+  systemPrompt?: string;
+  explanation: string;
+}
+
+export interface PlaygroundExample {
+  name: string;
+  prompt: string;
+  systemPrompt?: string;
+  description: string;
+  variations: Variation[];
+  ui?: UIConfig;
+}
+
+export interface PlaygroundScenario {
+  id: string;
+  title: string;
+  examples: PlaygroundExample[];
+  hints: string[];
+  ui?: UIConfig;
+}
+
 export interface PracticeExample {
   id: string;
   title: string;
@@ -32,30 +74,8 @@ export interface PracticeExample {
   userPrompt: string;
   expectedOutput: string;
   hints: string[];
-  variations: {
-    name: string;
-    prompt: string;
-    systemPrompt?: string;
-    explanation: string;
-  }[];
-}
-
-export interface PlaygroundScenario {
-  id: string;
-  title: string;
-  examples: {
-    name: string;
-    prompt: string;
-    systemPrompt: string;
-    description: string;
-    variations: {
-      name: string;
-      prompt: string;
-      systemPrompt: string;
-      explanation: string;
-    }[];
-  }[];
-  hints: string[];
+  variations: Variation[];
+  ui?: UIConfig;
 }
 
 export interface Course {

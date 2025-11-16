@@ -4,6 +4,10 @@ export const intermediatePlayground: PlaygroundScenario[] = [
   {
     id: 'data-instruction-separation',
     title: 'playground.intermediate.dataInstructionSeparation.title',
+    ui: {
+      archetype: 'template',
+      allowTemplate: true
+    },
     examples: [
       {
         name: 'playground.intermediate.dataInstructionSeparation.examples.animalSounds.name',
@@ -55,6 +59,12 @@ export const intermediatePlayground: PlaygroundScenario[] = [
   {
     id: 'output-formatting',
     title: 'playground.intermediate.outputFormatting.title',
+    ui: {
+      archetype: 'structured',
+      allowTemplate: true,
+      allowPrefill: true,
+      expectedFormat: 'xml'
+    },
     examples: [
       {
         name: 'playground.intermediate.outputFormatting.examples.haikuXML.name',
@@ -106,6 +116,10 @@ export const intermediatePlayground: PlaygroundScenario[] = [
   {
     id: 'step-by-step-thinking',
     title: 'playground.intermediate.stepByStepThinking.title',
+    ui: {
+      archetype: 'template',
+      allowTemplate: true
+    },
     examples: [
       {
         name: 'playground.intermediate.stepByStepThinking.examples.movieReview.name',
@@ -157,6 +171,10 @@ export const intermediatePlayground: PlaygroundScenario[] = [
   {
     id: 'few-shot-examples',
     title: 'playground.intermediate.fewShotExamples.title',
+    ui: {
+      archetype: 'few-shot',
+      showExamplesPane: true
+    },
     examples: [
       {
         name: 'playground.intermediate.fewShotExamples.examples.parentBot.name',

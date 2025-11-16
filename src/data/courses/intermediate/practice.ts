@@ -24,7 +24,8 @@ export const intermediatePractice: PracticeExample[] = [
         prompt: 'Write a haiku about {TOPIC}. Format it properly with 5-7-5 syllables.',
         explanation: 'practiceExercises.intermediate.chapter4Haiku.variations.template.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'template', allowTemplate: true }
   },
   {
     id: 'chapter4-dog-question-xml',
@@ -48,7 +49,8 @@ export const intermediatePractice: PracticeExample[] = [
         prompt: 'I have a question about dogs: <question>Are dogs brown?</question> Please answer briefly.',
         explanation: 'practiceExercises.intermediate.chapter4DogXML.variations.clearFormat.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'template', allowTemplate: true }
   },
 
   // Chapter 5: Formatting Output & Speaking for Claude
@@ -75,7 +77,8 @@ export const intermediatePractice: PracticeExample[] = [
         systemPrompt: '',
         explanation: 'practiceExercises.intermediate.chapter5Curry.variations.curryPrefill.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'structured', allowPrefill: true, expectedFormat: 'xml' }
   },
   {
     id: 'chapter5-two-haikus',
@@ -125,7 +128,8 @@ export const intermediatePractice: PracticeExample[] = [
         prompt: 'Classify this email. First analyze the key indicators, then consider each category, finally choose the best fit.\n\nEmail: Hi -- My Mixmaster4000 is producing a strange noise.',
         explanation: 'practiceExercises.intermediate.chapter6EmailClass.variations.detailedThinking.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'structured', expectedFormat: 'xml', allowPrefill: true }
   },
   {
     id: 'chapter6-email-formatted',
@@ -149,7 +153,8 @@ export const intermediatePractice: PracticeExample[] = [
         prompt: 'Put only the classification letter in <answer> tags: Email about billing charges not stopping.',
         explanation: 'practiceExercises.intermediate.chapter6EmailFormatted.variations.xmlOnly.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'structured', expectedFormat: 'xml', allowPrefill: true }
   },
 
   // Chapter 7: Using Examples (Few-Shot Prompting)
@@ -175,6 +180,7 @@ export const intermediatePractice: PracticeExample[] = [
         prompt: 'Use these 5 examples to classify the email... [extended examples]',
         explanation: 'practiceExercises.intermediate.chapter7EmailExamples.variations.moreExamples.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'few-shot', showExamplesPane: true }
   }
 ];

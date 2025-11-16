@@ -51,6 +51,15 @@ interface PracticeContent {
   }>;
   expectedOutput: string;
   hints?: string[];
+  ui?: {
+    archetype?: 'basic' | 'role' | 'template' | 'structured' | 'few-shot' | 'chaining';
+    allowSystemPrompt?: boolean;
+    allowTemplate?: boolean;
+    allowPrefill?: boolean;
+    allowChaining?: boolean;
+    expectedFormat?: 'xml' | 'json' | null;
+    showExamplesPane?: boolean;
+  };
 }
 
 interface PlaygroundContent {
@@ -67,6 +76,15 @@ interface PlaygroundContent {
       systemPrompt?: string;
       explanation: string;
     }>;
+    ui?: {
+      archetype?: 'basic' | 'role' | 'template' | 'structured' | 'few-shot' | 'chaining';
+      allowSystemPrompt?: boolean;
+      allowTemplate?: boolean;
+      allowPrefill?: boolean;
+      allowChaining?: boolean;
+      expectedFormat?: 'xml' | 'json' | null;
+      showExamplesPane?: boolean;
+    };
   }>;
   hints?: string[];
   variations?: Array<{
@@ -75,6 +93,15 @@ interface PlaygroundContent {
     systemPrompt?: string;
     explanation: string;
   }>;
+  ui?: {
+    archetype?: 'basic' | 'role' | 'template' | 'structured' | 'few-shot' | 'chaining';
+    allowSystemPrompt?: boolean;
+    allowTemplate?: boolean;
+    allowPrefill?: boolean;
+    allowChaining?: boolean;
+    expectedFormat?: 'xml' | 'json' | null;
+    showExamplesPane?: boolean;
+  };
 }
 
 interface LearningCardProps {
@@ -546,18 +573,20 @@ export default function LearningCard({
               {currentPlaygroundItem.examples.map((example, exIndex) => (
                 <div key={exIndex} className="mb-6">
                   <InteractivePromptEditor 
-                      example={{
-                        id: `${currentPlaygroundItem.id}-${exIndex}`,
-                        title: example.name,
-                        description: example.description,
-                        systemPrompt: example.systemPrompt || '',
-                        userPrompt: example.prompt,
-                        expectedOutput: '',
-                        hints: currentPlaygroundItem.hints || [],
-                        variations: example.variations || currentPlaygroundItem.variations || []
-                      }}
-                      mode="playground"
-                    />
+                    example={{
+                      id: `${currentPlaygroundItem.id}-${exIndex}`,
+                      title: example.name,
+                      description: example.description,
+                      systemPrompt: example.systemPrompt || '',
+                      userPrompt: example.prompt,
+                      expectedOutput: '',
+                      hints: currentPlaygroundItem.hints || [],
+                      variations: example.variations || currentPlaygroundItem.variations || [],
+                      ui: example.ui || currentPlaygroundItem.ui
+                    }}
+                    ui={example.ui || currentPlaygroundItem.ui}
+                    mode="playground"
+                  />
                 </div>
               ))}
             </div>
@@ -596,13 +625,15 @@ export default function LearningCard({
                 userPrompt: currentPracticeItem.userPrompt || 'Enter your prompt here...',
                 expectedOutput: currentPracticeItem.expectedOutput,
                 hints: currentPracticeItem.hints || [],
-                variations: currentPracticeItem.variants?.map(variant => ({
+                variations: (currentPracticeItem.variants || []).map(variant => ({
                   name: variant.name,
                   prompt: variant.prompt || '',
                   systemPrompt: variant.systemPrompt,
                   explanation: variant.explanation
-                })) || []
+                })),
+                ui: currentPracticeItem.ui
               }}
+              ui={currentPracticeItem.ui}
               mode="practice"
             />
           </div>

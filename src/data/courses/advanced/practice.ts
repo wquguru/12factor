@@ -23,7 +23,8 @@ export const advancedPractice: PracticeExample[] = [
         prompt: "If you are not certain, say you don't know. How many solo studio albums has Beyoncé released?",
         explanation: 'practiceExercises.advanced.chapter8GiveAnOut.variations.allowUnknown.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'template', allowTemplate: true }
   },
   {
     id: 'chapter8-cite-evidence',
@@ -47,7 +48,8 @@ export const advancedPractice: PracticeExample[] = [
         prompt: 'First extract any relevant numbers from the text, then answer the question about subscriber growth.',
         explanation: 'practiceExercises.advanced.chapter8CiteEvidence.variations.quoteFirst.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'template', allowTemplate: true, allowPrefill: true, expectedFormat: 'xml' }
   },
   {
     id: 'chapter9-blueprint',
@@ -72,7 +74,8 @@ export const advancedPractice: PracticeExample[] = [
         prompt: 'Fill in the blueprint template for a friendly career coach as described above.',
         explanation: 'practiceExercises.advanced.chapter9Blueprint.variations.structured.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'structured', allowTemplate: true, allowPrefill: true, expectedFormat: 'xml' }
   },
   {
     id: 'chapter10-chaining-tools',
@@ -96,6 +99,7 @@ export const advancedPractice: PracticeExample[] = [
         prompt: 'First think in <analysis> tags, then call the calculator tool, then answer in <final> tags.',
         explanation: 'practiceExercises.advanced.chapter10Chaining.variations.chainAndTool.explanation'
       }
-    ]
+    ],
+    ui: { archetype: 'chaining', allowChaining: true, allowPrefill: true, expectedFormat: 'xml' }
   }
 ];

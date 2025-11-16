@@ -41,7 +41,7 @@ export default getRequestConfig(async ({ locale }) => {
       locale,
       messages
     };
-  } catch (error) {
+  } catch {
     // Fallback to old single-file structure
     console.log(`Loading fallback single-file structure for locale: ${locale}`);
     return {

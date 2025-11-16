@@ -4,6 +4,10 @@ export const advancedPlayground: PlaygroundScenario[] = [
   {
     id: 'hallucination-guardrails',
     title: 'playground.advanced.hallucinationGuardrails.title',
+    ui: {
+      archetype: 'template',
+      allowTemplate: true
+    },
     examples: [
       {
         name: 'playground.advanced.hallucinationGuardrails.examples.allowUnknown.name',
@@ -35,6 +39,12 @@ export const advancedPlayground: PlaygroundScenario[] = [
   {
     id: 'complex-blueprints',
     title: 'playground.advanced.complexBlueprints.title',
+    ui: {
+      archetype: 'structured',
+      allowTemplate: true,
+      allowPrefill: true,
+      expectedFormat: 'xml'
+    },
     examples: [
       {
         name: 'playground.advanced.complexBlueprints.examples.careerCoach.name',
@@ -86,6 +96,12 @@ export const advancedPlayground: PlaygroundScenario[] = [
   {
     id: 'workflow-orchestration',
     title: 'playground.advanced.workflowOrchestration.title',
+    ui: {
+      archetype: 'chaining',
+      allowChaining: true,
+      allowPrefill: true,
+      expectedFormat: 'xml'
+    },
     examples: [
       {
         name: 'playground.advanced.workflowOrchestration.examples.promptChaining.name',

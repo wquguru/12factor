@@ -9,13 +9,6 @@ const MAX_REQUESTS_PER_HOUR = 50; // Max 50 requests per hour per IP
 // In-memory rate limiting (in production, use Redis)
 const ipRequestCounts = new Map<string, { count: number; hourlyCount: number; lastReset: number; hourlyReset: number }>();
 
-// Allowed paths to prevent API abuse
-const ALLOWED_PATHS = [
-  '/prompt-engineering/fundamentals',
-  '/prompt-engineering/intermediate',
-  '/prompt-engineering/advanced'
-];
-
 // Validate request source
 function validateRequestSource(referer: string | null, userAgent: string | null): boolean {
   if (!referer || !userAgent) return false;
@@ -121,7 +114,7 @@ export async function POST(request: NextRequest) {
     
     // Parse request body
     const body = await request.json();
-    const { systemPrompt, userPrompt, mode } = body;
+    const { systemPrompt, userPrompt, mode, prefill } = body;
     
     // Validate required fields
     if (!userPrompt || typeof userPrompt !== 'string') {
@@ -135,6 +128,13 @@ export async function POST(request: NextRequest) {
     if (!mode || !['playground', 'practice', 'evaluation'].includes(mode)) {
       return NextResponse.json(
         { error: 'Invalid request: mode must be either "playground", "practice", or "evaluation"' },
+        { status: 400 }
+      );
+    }
+    
+    if (prefill && typeof prefill !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid request: prefill must be a string' },
         { status: 400 }
       );
     }
@@ -164,16 +164,53 @@ export async function POST(request: NextRequest) {
     }
     
     // Prepare messages
-    const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
+    type DeepSeekMessage = {
+      role: 'system' | 'user' | 'assistant';
+      content: string;
+      prefix?: boolean;
+    };
+    const messages: DeepSeekMessage[] = [];
     
     if (systemPrompt) {
       messages.push({ role: 'system', content: systemPrompt });
     }
+
+    if (body.history !== undefined) {
+      if (!Array.isArray(body.history)) {
+        return NextResponse.json(
+          { error: 'Invalid request: history must be an array' },
+          { status: 400 }
+        );
+      }
+      for (const msg of body.history) {
+        if (!msg || (msg.role !== 'user' && msg.role !== 'assistant') || typeof msg.content !== 'string') {
+          return NextResponse.json(
+            { error: 'Invalid request: history entries must include role and content' },
+            { status: 400 }
+          );
+        }
+        messages.push({ role: msg.role, content: msg.content });
+      }
+    }
     
     messages.push({ role: 'user', content: userPrompt });
+
+    let stopSequences: string[] | undefined = undefined;
+    if (prefill) {
+      messages.push({ role: 'assistant', content: prefill, prefix: true });
+      const trimmedPrefill = prefill.trim();
+      const xmlMatch = trimmedPrefill.match(/<([A-Za-z0-9:_-]+)(?:\s[^>]*)?>\s*$/);
+      if (xmlMatch) {
+        stopSequences = [`</${xmlMatch[1]}>`];
+      } else if (trimmedPrefill.endsWith('{')) {
+        stopSequences = ['}'];
+      } else if (trimmedPrefill.endsWith('[')) {
+        stopSequences = [']'];
+      }
+    }
     
     // Determine model and parameters based on mode
-    const model = process.env.LLM_MODEL || 'gpt-3.5-turbo';
+    const model = process.env.LLM_MODEL || 'deepseek-chat';
     const maxTokens = mode === 'evaluation' ? 50 : 500; // Evaluation needs enough tokens for detailed response
     const temperature = mode === 'evaluation' ? 0.2 : 0.7; // Lower temperature for more consistent evaluation
     
@@ -199,6 +236,7 @@ export async function POST(request: NextRequest) {
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
+            stop: stopSequences,
           }),
           signal: controller.signal,
         });
@@ -239,12 +277,14 @@ export async function POST(request: NextRequest) {
     // Use OpenAI client (default or fallback)
     const completion = await llmClient.chat.completions.create({
       model, // Use configured model
-      messages,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      messages: messages.map(({ prefix, ...rest }) => rest),
       max_tokens: maxTokens,
       temperature: temperature,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0,
+      stop: stopSequences,
     });
     
     response = completion.choices[0]?.message?.content || 'No response generated';

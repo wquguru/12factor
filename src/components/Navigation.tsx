@@ -3,11 +3,9 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDownIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, GlobeAltIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import SocialShare from './SocialShare';
 import ThemeToggle from './ThemeToggle';
-import PromptEngineeringDropdown from './PromptEngineeringDropdown';
-import MobilePromptEngineeringMenu from './MobilePromptEngineeringMenu';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function Navigation() {
@@ -58,7 +56,8 @@ export default function Navigation() {
   const navigationItems = [
     { name: t('principles'), href: '/principles' as const },
     { name: t('flashcards'), href: '/flashcards' as const },
-    { name: t('quiz'), href: '/quiz' as const }
+    { name: t('quiz'), href: '/quiz' as const },
+    { name: t('promptEngineering'), href: '/prompt-engineering' as const }
   ];
 
   // Function to safely map dynamic routes back to their base routes
@@ -90,12 +89,17 @@ export default function Navigation() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors relative inline-flex items-center gap-1"
               >
                 {item.name}
+                {item.href === '/prompt-engineering' && (
+                  <SparklesIcon
+                    className="h-3 w-3 absolute -top-1 -right-3"
+                    style={{ color: 'var(--primary-green)' }}
+                  />
+                )}
               </Link>
             ))}
-            <PromptEngineeringDropdown />
           </div>
 
           {/* Mobile menu button */}
@@ -176,15 +180,20 @@ export default function Navigation() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-6 py-4 text-base font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors"
+                  className="block px-6 py-4 text-base font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors relative"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {item.name}
+                  <span className="inline-flex items-center gap-1">
+                    {item.name}
+                    {item.href === '/prompt-engineering' && (
+                      <SparklesIcon
+                        className="h-3 w-3"
+                        style={{ color: 'var(--primary-green)' }}
+                      />
+                    )}
+                  </span>
                 </Link>
               ))}
-              
-              {/* Prompt Engineering expandable menu */}
-              <MobilePromptEngineeringMenu onLinkClick={() => setIsMobileMenuOpen(false)} />
               
               {/* Language and theme controls */}
               <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800">

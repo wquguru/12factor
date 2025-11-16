@@ -78,7 +78,12 @@ export default function CourseLayout() {
       } catch {
         return key;
       }
-    } else if (key.startsWith('fundamentals.') || key.startsWith('advanced.')) {
+    } else if (
+      key.startsWith('fundamentals.') ||
+      key.startsWith('intermediate.') ||
+      key.startsWith('advanced.') ||
+      key.startsWith('bestPractice.')
+    ) {
       try {
         return t(key);
       } catch {
@@ -332,6 +337,8 @@ export default function CourseLayout() {
         return t('course.intermediate.title');
       case 'advanced':
         return t('course.advanced.title');
+      case 'best-practice':
+        return t('course.bestPractice.title');
       default:
         return 'Course';
     }
@@ -345,6 +352,8 @@ export default function CourseLayout() {
         return t('course.intermediate.summary');
       case 'advanced':
         return t('course.advanced.summary');
+      case 'best-practice':
+        return t('course.bestPractice.summary');
       default:
         return '';
     }

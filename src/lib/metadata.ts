@@ -170,4 +170,14 @@ export const defaultMetadata = {
       description: "高级提示词工程技巧：数据分离、输出格式化和思维链推理，构建复杂AI工作流程。",
     },
   },
+  promptEngineeringBestPractice: {
+    en: {
+      title: "Prompting Best Practices - Claude 4.5 Field Guide",
+      description: "Operational playbook for Claude Sonnet 4.5: explicit instructions, long-horizon context management, agent orchestration, and migration tips.",
+    },
+    zh: {
+      title: "提示词最佳实践 - Claude 4.5 作战手册",
+      description: "Claude Sonnet 4.5 的实战指南：明确指令、长程上下文管理、子代理编排以及迁移注意事项。",
+    },
+  },
 } as const;

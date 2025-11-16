@@ -14,9 +14,15 @@ export async function generateMetadata({
       case 'fundamentals':
         return defaultMetadata.promptEngineeringFundamentals[locale as 'en' | 'zh'] || 
                defaultMetadata.promptEngineeringFundamentals.en;
+      case 'intermediate':
+        return defaultMetadata.promptEngineering[locale as 'en' | 'zh'] || 
+               defaultMetadata.promptEngineering.en;
       case 'advanced':
         return defaultMetadata.promptEngineeringAdvanced[locale as 'en' | 'zh'] || 
                defaultMetadata.promptEngineeringAdvanced.en;
+      case 'best-practice':
+        return defaultMetadata.promptEngineeringBestPractice[locale as 'en' | 'zh'] || 
+               defaultMetadata.promptEngineeringBestPractice.en;
       default:
         return defaultMetadata.promptEngineering[locale as 'en' | 'zh'] || 
                defaultMetadata.promptEngineering.en;

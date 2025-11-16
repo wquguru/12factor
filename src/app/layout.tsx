@@ -28,7 +28,7 @@ export default async function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className={`${inter.variable} ${notoSansSC.variable} font-sans`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${notoSansSC.variable} font-sans`}>
         {children}
         <Analytics />
       </body>

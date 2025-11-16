@@ -86,6 +86,10 @@
       "advanced": {
         "title": "Advanced Course",
         "summary": "Reduce hallucinations, design complex prompts, and chain tools/search for reliable workflows"
+      },
+      "bestPractice": {
+        "title": "Prompting Best Practices",
+        "summary": "Claude 4.5 field guide for explicit instructions, context-aware workflows, and agent orchestration"
       }
     },
     "nextCourse": "Next Course",
@@ -467,9 +471,176 @@
           }
         }
       }
+    },
+    "bestPractice": {
+      "title": "Prompting Best Practices",
+      "summary": "Operational playbook for Claude 4.5 models with clear instructions, context management, and subagent orchestration.",
+      "sections": {
+        "generalPrinciples": {
+          "title": "Chapter 11: General principles (Claude 4.5)",
+          "theory": "Claude 4.5 models reward explicit, context-rich instructions. State desired outputs, stretch goals, and guardrails up front. When you explain why constraints matter, Sonnet and Haiku follow them more reliably.",
+          "examples": {
+            "0": "Less effective: Create an analytics dashboard | More effective: Create an analytics dashboard. Include as many relevant features and interactions as possible. Go beyond the basics to create a fully-featured implementation.",
+            "1": "Less effective: NEVER use ellipses | More effective: Your response will be read aloud by a text-to-speech engine, so never use ellipses since the engine will not know how to pronounce them.",
+            "2": "Clarify tone and scope: Explain the audience, success criteria, and any anti-goals so Claude can optimize for them."
+          },
+          "keyTechniques": {
+            "0": "Be explicit about outputs, constraints, and stretch goals",
+            "1": "Add motivation/context so rules feel purposeful",
+            "2": "Align examples with the behavior you want reproduced",
+            "3": "Spell out role, audience, format, and evaluation criteria"
+          },
+          "commonPitfalls": {
+            "0": "Assuming Claude will infer missing context or audience",
+            "1": "Providing examples that conflict with desired behavior",
+            "2": "Leaving quality bars and guardrails implicit"
+          }
+        },
+        "longHorizon": {
+          "title": "Chapter 12: Long-horizon reasoning & state",
+          "theory": "Sonnet 4.5 tracks state across long tasks when you give it structure. Use separate first-window prompts, todo lists, and explicit save/restore guidance. Pair with memory tools and context-compaction aware instructions.",
+          "examples": {
+            "0": "First window sets scaffolding (tests, scripts); later windows iterate on TODOs.",
+            "1": "Tell Claude: As context nears limit, save progress and continue after refresh; do not stop early.",
+            "2": "Use JSON files (tests.json) plus freeform notes (progress.txt) to persist status."
+          },
+          "keyTechniques": {
+            "0": "Separate setup window from iterative windows",
+            "1": "Write and reuse structured state files (tests.json, todos)",
+            "2": "Instruct persistence before context refresh; avoid early wrap-up",
+            "3": "Prefer starting fresh + filesystem discovery when compaction is unavailable"
+          },
+          "commonPitfalls": {
+            "0": "Letting the model truncate work when token budget shrinks",
+            "1": "Keeping state only in freeform text with no schema",
+            "2": "Failing to re-orient after a fresh context window"
+          }
+        },
+        "situationalGuidance": {
+          "title": "Chapter 13: Situational prompts & formatting control",
+          "theory": "Claude 4.5 is concise by default. If you want verbatim progress updates or specific formatting, ask for them. Tell Claude what to do (desired format) instead of what not to do.",
+          "examples": {
+            "0": "After tool use, provide a one-sentence summary of what you changed.",
+            "1": "Use XML wrappers (e.g., '<'smoothly_flowing_prose'>'…'</'smoothly_flowing_prose'>' ) to lock response style.",
+            "2": "Prefer \"Write in clear flowing paragraphs\" over \"Don’t use bullets\"."
+          },
+          "keyTechniques": {
+            "0": "Request periodic summaries when you want visibility",
+            "1": "Use positive-format instructions instead of prohibitions",
+            "2": "Match prompt style to desired output style",
+            "3": "Prefill opening tokens to enforce XML/JSON shells"
+          },
+          "commonPitfalls": {
+            "0": "Vague requests like ‘be concise’ without format hints",
+            "1": "Overusing markdown bullets when prose is preferred",
+            "2": "Not prefilling structured outputs that need strict schemas"
+          }
+        },
+        "agenticOrchestration": {
+          "title": "Chapter 14: Agentic tooling & subagents",
+          "theory": "Sonnet 4.5 excels at parallel tool use if rules are explicit. Document when to call tools, how to tag results, and when to delegate to subagents for fresh context windows.",
+          "examples": {
+            "0": "'<'use_parallel_tool_calls'>' encourage parallel reads when independent.",
+            "1": "Tag tool outputs with '<'tool_result id=\"1\"'>' … '</'tool_result'>' before synthesis.",
+            "2": "Delegate only when a separate context is valuable; otherwise stay single-agent."
+          },
+          "keyTechniques": {
+            "0": "Document tool purpose, args, and expected outputs inside the prompt",
+            "1": "Encourage parallel calls when independent; keep dependent calls sequential",
+            "2": "Wrap retrieval/tool results to prevent instruction bleed",
+            "3": "Instruct verification and citation of tool-sourced facts"
+          },
+          "commonPitfalls": {
+            "0": "Implicit tool rules that cause malformed invocations",
+            "1": "Letting Claude fabricate tool outputs instead of waiting",
+            "2": "Skipping the synthesis step after retrieval"
+          }
+        },
+        "migration": {
+          "title": "Chapter 15: Migration & output UX",
+          "theory": "When migrating to Claude 4.5, restate desired behaviors, ask for animations/UX details explicitly, and avoid hard-coding to pass tests. Use detailed prompts instead of relying on legacy ‘above and beyond’ behavior.",
+          "examples": {
+            "0": "Create a professional presentation on [topic]. Include thoughtful design elements and animations.",
+            "1": "Don’t hold back—ask for fusion aesthetics and multiple design options to avoid generic UI.",
+            "2": "Please write a high-quality, general solution; do not hard-code for test cases."
+          },
+          "keyTechniques": {
+            "0": "Be specific about desired behaviors when upgrading models",
+            "1": "Request creative/UI elements explicitly (animations, interactions, palettes)",
+            "2": "Emphasize general solutions over test-passing shortcuts"
+          },
+          "commonPitfalls": {
+            "0": "Assuming legacy ‘above and beyond’ behavior without asking",
+            "1": "Overfitting prompts to known test cases or fixtures"
+          }
+        }
+      }
     }
   },
   "practiceExercises": {
+    "bestPractice": {
+      "clarityBrief": {
+        "title": "Exercise: Clarity upgrade (analytics dashboard)",
+        "description": "Rewrite a vague request into a context-rich brief with features, stretch goals, and guardrails.",
+        "expectedOutput": "A rewritten brief that specifies audience, required views, interactions, QA checks, and success criteria.",
+        "hints": {
+          "0": "State deliverables, scope, and anti-goals",
+          "1": "Add context: who, when, why the dashboard matters",
+          "2": "List stretch features plus QA/acceptance checks"
+        },
+        "variations": {
+          "baseline": {
+            "name": "Baseline vague",
+            "explanation": "Shows the unstructured starting point"
+          },
+          "bestPractice": {
+            "name": "Best-practice brief",
+            "explanation": "Rich instructions with context, scope, and guardrails"
+          }
+        }
+      },
+      "contextMemo": {
+        "title": "Exercise: Context-budget memo",
+        "description": "Author a system message that prevents early wrap-up and forces saving state before context refresh.",
+        "expectedOutput": "System text that explains automatic compaction, persistence steps, and insists on task completion.",
+        "hints": {
+          "0": "Explain why saving state matters",
+          "1": "Tell Claude not to stop early when budget shrinks",
+          "2": "Describe exactly where to save notes/tests"
+        },
+        "variations": {
+          "panic": {
+            "name": "Panic wrap-up",
+            "explanation": "Ends early instead of persisting state"
+          },
+          "memoryAware": {
+            "name": "Memory-aware",
+            "explanation": "Persists progress then resumes seamlessly"
+          }
+        }
+      },
+      "researchLoop": {
+        "title": "Exercise: Structured research loop",
+        "description": "Design a prompt that forces hypothesis-tracking, multi-source verification, and progress notes for research tasks.",
+        "expectedOutput": "Prompt with success criteria, hypothesis list, confidence tracking, verification steps, and transparent notes.",
+        "hints": {
+          "0": "Define success before searching",
+          "1": "Track hypotheses with confidence scores",
+          "2": "Require multiple sources and progress notes"
+        },
+        "variations": {
+          "openEnded": {
+            "name": "Open-ended ask",
+            "explanation": "Unstructured request without safeguards"
+          },
+          "structured": {
+            "name": "Structured loop",
+            "explanation": "Fully instrumented research workflow"
+          }
+        }
+      }
+    },
+
     "fundamentals": {
       "chapter1BasicStructure": {
         "title": "Chapter 1 Exercise: Count to Three (API Structure)",
@@ -1192,6 +1363,162 @@
               }
             }
           }
+        }
+      }
+    },
+    "bestPractice": {
+      "instructionStudio": {
+        "title": "Chapter 11 Playground: Instruction Studio",
+        "examples": {
+          "analytics": {
+            "name": "Analytics Brief Workshop",
+            "description": "Transform a vague dashboard request into a context-rich brief with deliverables and guardrails.",
+            "variations": {
+              "lessEffective": {
+                "name": "Less effective",
+                "explanation": "Single sentence with no audience, scope, or success criteria."
+              },
+              "contextRich": {
+                "name": "Context-rich brief",
+                "explanation": "Explicitly lists views, interactions, and anomaly follow-ups for leadership."
+              }
+            }
+          },
+          "formatting": {
+            "name": "Formatting Guardrails",
+            "description": "Show why explaining the motivation behind formatting rules (like TTS) improves compliance.",
+            "variations": {
+              "ruleOnly": {
+                "name": "Rule only",
+                "explanation": "States the rule without context."
+              },
+              "contextual": {
+                "name": "Contextual rule",
+                "explanation": "Explains the TTS limitation so the no-ellipsis guardrail sticks."
+              }
+            }
+          }
+        },
+        "hints": {
+          "0": "State who the output is for and why constraints exist.",
+          "1": "List deliverables, stretch goals, and QA checkpoints explicitly.",
+          "2": "Model the desired tone/format inside your examples."
+        }
+      },
+      "workflowDirector": {
+        "title": "Chapter 12 Playground: Workflow Director",
+        "examples": {
+          "contextMemo": {
+            "name": "Context Budget Memo",
+            "description": "Teach Claude how to behave when the harness compacts context windows automatically.",
+            "variations": {
+              "wrapUp": {
+                "name": "Wrap-up early",
+                "explanation": "Stops the task instead of persisting state."
+              },
+              "memoryFirst": {
+                "name": "Memory-first",
+                "explanation": "Saves checkpoints before continuing after refresh."
+              }
+            }
+          },
+          "researchLoop": {
+            "name": "Structured Research Loop",
+            "description": "Instrument research with hypotheses, verification, and progress notes.",
+            "variations": {
+              "openEnded": {
+                "name": "Open-ended ask",
+                "explanation": "Generic research request with no safeguards."
+              },
+              "instrumented": {
+                "name": "Instrumented workflow",
+                "explanation": "Uses sections/tags for success criteria, hypotheses, and verification."
+              }
+            }
+          }
+        },
+        "hints": {
+          "0": "Describe the agent harness (context compaction, memory files) explicitly.",
+          "1": "Require hypothesis tracking, verification cadence, and confidence updates.",
+          "2": "Segment analysis, tool calls, and answers with tags so state is easy to resume."
+        }
+      }
+    },
+    "bestPractice": {
+      "instructionStudio": {
+        "title": "Chapter 11 Playground: Instruction Studio",
+        "examples": {
+          "analytics": {
+            "name": "Analytics Brief Workshop",
+            "description": "Transform a vague dashboard request into a context-rich brief with deliverables and guardrails.",
+            "variations": {
+              "lessEffective": {
+                "name": "Less effective",
+                "explanation": "Single sentence with no audience, scope, or success criteria."
+              },
+              "contextRich": {
+                "name": "Context-rich brief",
+                "explanation": "Explicitly lists views, interactions, and anomaly follow-ups for leadership."
+              }
+            }
+          },
+          "formatting": {
+            "name": "Formatting Guardrails",
+            "description": "Show why explaining the motivation behind formatting rules (like TTS) improves compliance.",
+            "variations": {
+              "ruleOnly": {
+                "name": "Rule only",
+                "explanation": "States the rule without context."
+              },
+              "contextual": {
+                "name": "Contextual rule",
+                "explanation": "Explains the TTS limitation so the no-ellipsis guardrail sticks."
+              }
+            }
+          }
+        },
+        "hints": {
+          "0": "State who the output is for and why constraints exist.",
+          "1": "List deliverables, stretch goals, and QA checkpoints explicitly.",
+          "2": "Model the desired tone/format inside your examples."
+        }
+      },
+      "workflowDirector": {
+        "title": "Chapter 12 Playground: Workflow Director",
+        "examples": {
+          "contextMemo": {
+            "name": "Context Budget Memo",
+            "description": "Teach Claude how to behave when the harness compacts context windows automatically.",
+            "variations": {
+              "wrapUp": {
+                "name": "Wrap-up early",
+                "explanation": "Stops the task instead of persisting state."
+              },
+              "memoryFirst": {
+                "name": "Memory-first",
+                "explanation": "Saves checkpoints before continuing after refresh."
+              }
+            }
+          },
+          "researchLoop": {
+            "name": "Structured Research Loop",
+            "description": "Instrument research with hypotheses, verification, and progress notes.",
+            "variations": {
+              "openEnded": {
+                "name": "Open-ended ask",
+                "explanation": "Generic research request with no safeguards."
+              },
+              "instrumented": {
+                "name": "Instrumented workflow",
+                "explanation": "Uses sections/tags for success criteria, hypotheses, and verification."
+              }
+            }
+          }
+        },
+        "hints": {
+          "0": "Describe the agent harness (context compaction, memory files) explicitly.",
+          "1": "Require hypothesis tracking, verification cadence, and confidence updates.",
+          "2": "Segment analysis, tool calls, and answers with tags so state is easy to resume."
         }
       }
     }

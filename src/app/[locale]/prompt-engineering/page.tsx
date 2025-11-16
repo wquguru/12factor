@@ -88,6 +88,8 @@ export default async function PromptEngineeringPage({
                     return t('course.intermediate.title');
                   case 'advanced':
                     return t('course.advanced.title');
+                  case 'best-practice':
+                    return t('course.bestPractice.title');
                   default:
                     return 'Course';
                 }
@@ -101,6 +103,8 @@ export default async function PromptEngineeringPage({
                     return t('course.intermediate.summary');
                   case 'advanced':
                     return t('course.advanced.summary');
+                  case 'best-practice':
+                    return t('course.bestPractice.summary');
                   default:
                     return '';
                 }

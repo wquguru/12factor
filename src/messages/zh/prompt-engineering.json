@@ -85,6 +85,10 @@
       "intermediate": {
         "title": "中级课程",
         "summary": "掌握数据分离、输出格式化和系统性思考的高级技术"
+      },
+      "advanced": {
+        "title": "高级课程",
+        "summary": "学会降低幻觉、构建复杂提示，并串联工具与搜索打造可靠工作流"
       }
     },
     "sections": "章节",
@@ -115,7 +119,6 @@
     "canImprove": "输出可改进",
     "aiThinking": "AI 正在思考...",
     "clickRunPrompt": "点击\"运行提示\"查看AI响应",
-    "coreConceptsTitle": "核心概念",
     "keyTechniquesTitle": "关键技巧",
     "commonPitfallsTitle": "常见陷阱",
     "promptTemplate": "提示模板",
@@ -359,6 +362,92 @@
             "0": "使用质量差或无关的示例",
             "1": "示例间格式不一致",
             "2": "示例过少或过多"
+          }
+        }
+      }
+    },
+    "advanced": {
+      "title": "高级提示工程",
+      "summary": "学会防止幻觉、撰写定制化提示蓝图，并编排迭代与工具链路。",
+      "sections": {
+        "avoidingHallucinations": {
+          "title": "第8章：避免幻觉",
+          "theory": "Claude 想变得有帮助，在被逼答时会捏造细节。本章教你：允许拒答、先找证据再作答，以及在需要准确性时调低随机性和温度。让每个事实回答都建立在可验证的文本上。",
+          "examples": {
+            "0": "加入规则：如果不确定，就说“我不知道”，并说明缺少什么信息。",
+            "1": "把任务拆成两步：先在 〈evidence〉 标签里提取引用，再根据引用回答。",
+            "2": "降低 temperature 或要求 Claude 在给出数字前自检。"
+          },
+          "keyTechniques": {
+            "0": "明确告诉 Claude 可以拒答，比瞎猜更好。",
+            "1": "用 XML 标签或编号步骤强制“先证据，后回答”。",
+            "2": "要求每个事实回答都带引用或编号。",
+            "3": "在追求准确性时控制 temperature / top_p。"
+          },
+          "commonPitfalls": {
+            "0": "把用户问题埋在长文本前面又不在尾部重申。",
+            "1": "允许 Claude 不引用文档就直接回答。",
+            "2": "没有说明找不到证据时应如何回复。"
+          }
+        },
+        "complexPrompts": {
+          "title": "第9章：从零构建复杂提示",
+          "theory": "复杂提示是一份蓝图：先定角色与目标，再补充背景与约束，写出工作流步骤，最后锁定输出格式和验收标准。按块组合，你可以在不同行业重复使用同一模板。",
+          "examples": [
+            "把人物、使命、语气指引写进带标签的段落，例如 〈role〉、〈mission〉、〈tone〉。",
+            "在给步骤前先列出 guardrails 和禁止事项。",
+            "结尾明确输出格式，让审核者一眼就能核对。"
+          ],
+          "keyTechniques": {
+            "0": "拆成可复用的部分：角色、目标、上下文、流程、输出。",
+            "1": "使用 XML 标签或标题让每段易于扫描。",
+            "2": "在 guardrails 中写明失败场景与升级路径。",
+            "3": "使用类似 [[行业]] 的占位符参数化模板，方便跨领域复用。"
+          },
+          "commonPitfalls": {
+            "0": "把所有指令挤成一段，语气与规则混在一起。",
+            "1": "缺少 guardrails，Claude 会越界或在不确定时乱猜。",
+            "2": "忘记写清对话何时结束、如何结束。"
+          }
+        },
+        "chaining": {
+          "title": "附录10.1：多轮链式提示",
+          "theory": "链式提示让 Claude 先出草稿、再自我评审，然后再答复。每一轮都有清晰目标——头脑风暴、评估、改写——上一步的输出成为下一步的输入。像人类反复改稿一样减少错误。",
+          "examples": [
+            "先生成多个候选，再用第二轮打分选优。",
+            "把推理草稿放进 〈analysis〉 标签，只在 〈final〉 标签里输出给用户的答案。",
+            "加入“质量审查”步骤，检查推理、数学或合规性。"
+          ],
+          "keyTechniques": {
+            "0": "给每一阶段命名（brainstorm、review、final）。",
+            "1": "在每轮明确携带哪些上下文。",
+            "2": "为评审轮提供检查清单或评分表。",
+            "3": "限制轮数，避免无限循环。"
+          },
+          "commonPitfalls": {
+            "0": "让 Claude 直接复用第一版答案，不做评审。",
+            "1": "没说清评审该找哪些错误。",
+            "2": "不同阶段的语气/temperature 没有重置。"
+          }
+        },
+        "toolsRetrieval": {
+          "title": "附录10.2–10.3：工具调用与检索",
+          "theory": "工具和检索为 Claude 提供外部数据与能力。描述好接口，让 Claude 输出结构化调用，把工具结果塞回提示，再要求最终回答必须引用所读内容。计算器、数据库、RAG 都遵循同样的模式。",
+          "examples": [
+            "定义函数调用的 JSON schema（名称 + 参数），说明何时触发。",
+            "调用工具后，用清晰的分隔（如 〈tool_result id=\"1\"〉…〈/tool_result〉）把结果塞回提示，再请求最终答案。",
+            "跑一遍迷你 RAG：生成搜索词→摘要→基于摘要合成并注明引用。"
+          ],
+          "keyTechniques": {
+            "0": "在提示里写明每个工具的用途、参数和限制。",
+            "1": "用标签标注工具输出，避免与指令混淆。",
+            "2": "要求 Claude 只使用检索片段中的信息。",
+            "3": "输出引用或 ID，方便审计。"
+          },
+          "commonPitfalls": {
+            "0": "未明确调用规则导致格式错误。",
+            "1": "让 Claude 编造工具结果而不是等待真实返回。",
+            "2": "检索后不做综合，直接粘贴片段。"
           }
         }
       }
@@ -645,6 +734,88 @@
           }
         }
       }
+    },
+    "advanced": {
+      "chapter8GiveAnOut": {
+        "title": "第8章练习：允许“不知道”",
+        "description": "重写提示，让 Claude 可以坦诚不知道 Beyoncé 专辑数量，并在回答前给出处。",
+        "expectedOutput": "一个带编号的回答，要么引用可靠来源给出专辑数量，要么明确说明不知道并解释原因。",
+        "hints": {
+          "0": "明确写出“拒答优于乱猜”的规则。",
+          "1": "要求先给引用或证据再回答。",
+          "2": "把 temperature 调低，强调准确性。"
+        },
+        "variations": {
+          "noOut": {
+            "name": "无防护",
+            "explanation": "原始单轮提问，容易出现幻觉数字。"
+          },
+          "allowUnknown": {
+            "name": "允许不知道",
+            "explanation": "展示加入拒答选项后的改进。"
+          }
+        }
+      },
+      "chapter8CiteEvidence": {
+        "title": "第8章练习：引用招股书",
+        "description": "强制 Claude 先从文本中抽取相关语句，再回答订阅用户增长问题。",
+        "expectedOutput": "Claude 先列出支持性引用（显示增长 49 倍），再基于引用回答。",
+        "hints": {
+          "0": "将“找证据”和“回答”拆成两步。",
+          "1": "用 〈evidence〉 标签或项目符号凸显引用。",
+          "2": "说明如果找不到答案应该怎么说。"
+        },
+        "variations": {
+          "noQuotes": {
+            "name": "无证据步骤",
+            "explanation": "Claude 读了文档但仍可能直接编答案。"
+          },
+          "quoteFirst": {
+            "name": "先引再答模板",
+            "explanation": "要求先列数字再得出结论。"
+          }
+        }
+      },
+      "chapter9Blueprint": {
+        "title": "第9章练习：提示蓝图",
+        "description": "为“友好的职业教练”填充蓝图模板：角色、目标、约束、流程、输出格式。",
+        "expectedOutput": "一份多段式提示，使用标题或标签，可在多种辅导场景复用。",
+        "hints": {
+          "0": "先定义 persona 和使命。",
+          "1": "清楚写出 guardrails 和升级路径。",
+          "2": "结尾用标签/JSON/标题锁定输出格式。"
+        },
+        "variations": {
+          "generic": {
+            "name": "普通提示",
+            "explanation": "无结构的指令，容易风格不稳。"
+          },
+          "structured": {
+            "name": "结构化蓝图",
+            "explanation": "使用标签分块，便于复用。"
+          }
+        }
+      },
+      "chapter10Chaining": {
+        "title": "第10章练习：链式 + 工具",
+        "description": "写出让 Claude 先思考、再调用计算器工具、最后给出验证后答案的指令。",
+        "expectedOutput": "Claude 输出 〈analysis〉 思考、发出计算器调用、读取结果，然后在 〈final〉 中回答。",
+        "hints": {
+          "0": "说明何时调用工具以及参数。",
+          "1": "用标签分隔分析与最终答案。",
+          "2": "要求工具失败时给出告警或说明。"
+        },
+        "variations": {
+          "singleShot": {
+            "name": "单轮回答",
+            "explanation": "无验证的基线。"
+          },
+          "chainAndTool": {
+            "name": "链式 + 工具",
+            "explanation": "思考→调用→回答的完整流程。"
+          }
+        }
+      }
     }
   },
   "playground": {
@@ -903,6 +1074,108 @@
           "0": "选择清晰代表所需输出的示例",
           "1": "使用2-3个示例获得最佳结果",
           "2": "在所有示例中保持一致的格式"
+        }
+      }
+    },
+    "advanced": {
+      "hallucinationGuardrails": {
+        "title": "防幻觉护栏",
+        "hints": {
+          "0": "写明缺少证据时的回复方式。",
+          "1": "把“找证据”和“回答”拆开并标注。",
+          "2": "在事实任务中使用低 temperature 或强调准确性。"
+        },
+        "examples": {
+          "allowUnknown": {
+            "name": "允许不知道",
+            "description": "练习在事实问答中加入拒答和兜底文案。",
+            "variations": {
+              "temperature": {
+                "name": "温度护栏",
+                "explanation": "展示降低随机性后的稳定输出。"
+              },
+              "quoteFirst": {
+                "name": "先引后答",
+                "explanation": "要求先给证据再回答。"
+              }
+            }
+          }
+        }
+      },
+      "complexBlueprints": {
+        "title": "复杂提示蓝图",
+        "hints": {
+          "0": "让每个分区短且有标签，方便业务方编辑。",
+          "1": "把 guardrails 和流程放在一起，Claude 不会漏看约束。",
+          "2": "用 {{变量}} 模板化，方便复用。"
+        },
+        "examples": {
+          "careerCoach": {
+            "name": "职业教练蓝图",
+            "description": "亲和语气、工作流和输出格式兼备的辅导模板。",
+            "variations": {
+              "brief": {
+                "name": "简化版",
+                "explanation": "无结构的快速指令，用于对比。"
+              },
+              "blueprint": {
+                "name": "完整蓝图",
+                "explanation": "包含标签和占位符。"
+              }
+            }
+          },
+          "auditBot": {
+            "name": "合规审计 Bot",
+            "description": "强调步骤检查与 JSON 输出的风险/合规模板。",
+            "variations": {
+              "linear": {
+                "name": "线性指令",
+                "explanation": "单段文本，无标签。"
+              },
+              "sectioned": {
+                "name": "分区模板",
+                "explanation": "演示如何用 〈checks〉、〈steps〉、〈format〉 区块让审计流程井然有序。"
+              }
+            }
+          }
+        }
+      },
+      "workflowOrchestration": {
+        "title": "工作流编排",
+        "hints": {
+          "0": "给每个阶段打标签，方便调试。",
+          "1": "写清工具 schema 和参数占位符。",
+          "2": "最终回答要引用检索片段并标注来源。"
+        },
+        "examples": {
+          "promptChaining": {
+            "name": "链式提示模式",
+            "description": "让 Claude 思考→工具验证→回答。",
+            "variations": {
+              "singleStep": {
+                "name": "单步",
+                "explanation": "无链式基线。"
+              },
+              "multiTool": {
+                "name": "多工具流程",
+                "explanation": "包含分析、工具请求、最终格式占位。"
+              }
+            }
+          },
+          "searchRetrieval": {
+            "name": "搜索与检索",
+            "description": "生成搜索词、摘要、然后基于摘要给出有据可依的答案。",
+            "variations": {
+              "noGrounding": {
+                "name": "无检索",
+                "explanation": "展示未引用上下文时的效果。"
+              },
+              "withCitations": {
+                "name": "带引用的答案",
+                "explanation": "展示为每条事实添加 〈cite〉 标签或片段 ID，确保综合答案有据可查。"
+              }
+            }
+          }
         }
       }
     }

@@ -86,6 +86,8 @@ export default async function PromptEngineeringPage({
                     return t('course.fundamentals.title');
                   case 'intermediate':
                     return t('course.intermediate.title');
+                  case 'advanced':
+                    return t('course.advanced.title');
                   default:
                     return 'Course';
                 }
@@ -97,6 +99,8 @@ export default async function PromptEngineeringPage({
                     return t('course.fundamentals.summary');
                   case 'intermediate':
                     return t('course.intermediate.summary');
+                  case 'advanced':
+                    return t('course.advanced.summary');
                   default:
                     return '';
                 }

@@ -82,6 +82,10 @@
       "intermediate": {
         "title": "Intermediate Course",
         "summary": "Master advanced techniques for data separation, output formatting, and systematic thinking"
+      },
+      "advanced": {
+        "title": "Advanced Course",
+        "summary": "Reduce hallucinations, design complex prompts, and chain tools/search for reliable workflows"
       }
     },
     "nextCourse": "Next Course",
@@ -115,7 +119,6 @@
     "canImprove": "Output can improve",
     "aiThinking": "AI is thinking...",
     "clickRunPrompt": "Click \"Run Prompt\" to see AI response",
-    "coreConceptsTitle": "Core Concepts",
     "keyTechniquesTitle": "Key Techniques",
     "commonPitfallsTitle": "Common Pitfalls",
     "promptTemplate": "Prompt Template",
@@ -359,6 +362,92 @@
             "0": "Using poor quality or irrelevant examples",
             "1": "Not maintaining consistent format across examples",
             "2": "Too few or too many examples"
+          }
+        }
+      }
+    },
+    "advanced": {
+      "title": "Advanced Prompt Engineering",
+      "summary": "Defend against hallucinations, author bespoke prompt blueprints, and orchestrate iterative, tool-aware workflows.",
+      "sections": {
+        "avoidingHallucinations": {
+          "title": "Chapter 8: Avoiding Hallucinations",
+          "theory": "Claude wants to be helpful and will fabricate details when pressured. This chapter shows how to give the model explicit permission to abstain, how to make it collect evidence before answering, and how to tune parameters so accuracy beats creativity. Combine these steps with clear structure so every factual reply is grounded in verifiable text.",
+          "examples": {
+            "0": "Add a rule such as “If you are not certain, reply with ‘I don't know’ and explain what would be needed to know.”",
+            "1": "Split the task: first extract supporting sentences inside 〈evidence〉 tags, then answer using only those sentences.",
+            "2": "Lower temperature or ask Claude to double-check numbers before finalizing the response."
+          },
+          "keyTechniques": {
+            "0": "Give Claude an explicit out so refusing is preferable to guessing.",
+            "1": "Force an evidence-first workflow with XML tags or numbered steps.",
+            "2": "Require citations or quote IDs in every factual answer.",
+            "3": "Control randomness (temperature, top_p) when accuracy matters."
+          },
+          "commonPitfalls": {
+            "0": "Burying the user question above distractor text without restating it at the end.",
+            "1": "Letting Claude answer without quoting the provided document.",
+            "2": "Failing to explain what to do when no evidence is found."
+          }
+        },
+        "complexPrompts": {
+          "title": "Chapter 9: Complex Prompts from Scratch",
+          "theory": "Complex prompts are blueprints. They start with role and mission, add context, guardrails, and workflow steps, then pin down output format and success criteria. By composing these sections deliberately you can recycle the template across industries while still sounding bespoke.",
+          "examples": [
+            "Wrap the persona, mission, and voice guidance inside labeled sections such as 〈role〉, 〈mission〉, and 〈tone〉.",
+            "List guardrails and forbidden behaviors before giving task steps.",
+            "Finish with structured output requirements so reviewers know what to expect."
+          ],
+          "keyTechniques": {
+            "0": "Break prompts into reusable sections: role, goals, context, workflow, output.",
+            "1": "Use XML tags or markdown headings so each section is easy to scan.",
+            "2": "Describe failure modes and escalation paths in the guardrails section.",
+            "3": "Parameterize the template with placeholder tokens (e.g., [[INDUSTRY]]) so you can reuse it across verticals."
+          },
+          "commonPitfalls": {
+            "0": "Writing one giant paragraph with mixed instructions and tone.",
+            "1": "Skipping guardrails, which lets Claude overstep or guess when unsure.",
+            "2": "Forgetting to specify how and when the conversation should end."
+          }
+        },
+        "chaining": {
+          "title": "Appendix 10.1: Prompt Chaining",
+          "theory": "Prompt chaining has Claude critique or refine its own work before answering the user. Each pass has a clear purpose—brainstorm, evaluate, revise—and the output of one pass becomes the input of the next. This mirrors how humans rewrite drafts to remove mistakes.",
+          "examples": [
+            "Ask Claude to generate candidates, then run a second pass that scores them before choosing one.",
+            "Keep the draft reasoning inside 〈analysis〉 tags and reserve 〈final〉 for the user-facing response.",
+            "Request a “quality review” step that checks reasoning, math, or policy compliance before publishing the answer."
+          ],
+          "keyTechniques": {
+            "0": "Name every stage (brainstorm, verify, final) so Claude knows when to switch modes.",
+            "1": "Carry over the relevant context between stages explicitly.",
+            "2": "Provide rubrics for the review pass so it knows what to look for.",
+            "3": "Stop the chain after a fixed number of passes to avoid infinite loops."
+          },
+          "commonPitfalls": {
+            "0": "Letting Claude reuse the first-pass answer verbatim without critique.",
+            "1": "Not explaining what counts as an error during the review step.",
+            "2": "Failing to reset temperature or tone between stages."
+          }
+        },
+        "toolsRetrieval": {
+          "title": "Appendix 10.2–10.3: Tool Use, Search & Retrieval",
+          "theory": "Tools and retrieval give Claude grounded data and capabilities it does not inherently possess. You describe the tool interface, have Claude emit structured calls, feed the tool results back, and require the final answer to cite what it read. The same pattern powers calculator calls, database lookups, and RAG systems.",
+          "examples": [
+            "Define a JSON schema for function calls (name + arguments) and tell Claude when to emit them.",
+            "After a tool call, paste the tool output back into the prompt using a delimiter such as 〈tool_result id=\"1\"〉…〈/tool_result〉 before asking for the final answer.",
+            "Run a miniature RAG flow: generate search queries, summarize hits, then synthesize a grounded response with citations."
+          ],
+          "keyTechniques": {
+            "0": "Document each tool's purpose, arguments, and limits inside the prompt.",
+            "1": "Tag tool outputs (〈tool_result id=\"1\"〉...〈/tool_result〉) so Claude cannot confuse them with instructions.",
+            "2": "Instruct Claude to only answer with information present in the retrieved snippets.",
+            "3": "Log citations or IDs so downstream systems can audit the answer."
+          },
+          "commonPitfalls": {
+            "0": "Leaving tool invocation rules implicit, which causes malformed calls.",
+            "1": "Letting Claude invent tool responses instead of waiting for real data.",
+            "2": "Skipping the synthesis step after retrieval, leading to copy-pasted snippets."
           }
         }
       }
@@ -645,6 +734,88 @@
           }
         }
       }
+    },
+    "advanced": {
+      "chapter8GiveAnOut": {
+        "title": "Chapter 8 Exercise: Give Claude an Out",
+        "description": "Rewrite the prompt so Claude can admit uncertainty about Beyoncé's discography and must cite a source before answering.",
+        "expectedOutput": "A numbered answer that either cites a reliable source for the album count or clearly says “I don't know” with justification.",
+        "hints": {
+          "0": "Add an explicit rule that refusing to answer is better than guessing.",
+          "1": "Request citations or supporting quotes before the final sentence.",
+          "2": "Lower temperature or emphasize accuracy over creativity."
+        },
+        "variations": {
+          "noOut": {
+            "name": "No Guardrail",
+            "explanation": "The original single-shot question that often produces a hallucinated number."
+          },
+          "allowUnknown": {
+            "name": "Allow Unknown",
+            "explanation": "Shows how the response changes when Claude can say it does not know."
+          }
+        }
+      },
+      "chapter8CiteEvidence": {
+        "title": "Chapter 8 Exercise: Quote the Prospectus",
+        "description": "Force Claude to extract relevant lines from the Matterport prospectus before answering the subscriber-growth question.",
+        "expectedOutput": "Claude lists the supporting quote (showing subscribers up 49×) and then answers using that quote as evidence.",
+        "hints": {
+          "0": "Separate the evidence-gathering and answering steps.",
+          "1": "Wrap quotes in 〈evidence〉 tags or bullets so they stand out.",
+          "2": "Explain what to do if the document does not contain the answer."
+        },
+        "variations": {
+          "noQuotes": {
+            "name": "No Evidence Step",
+            "explanation": "Claude reads the document but can still guess without citing it."
+          },
+          "quoteFirst": {
+            "name": "Quote-First Template",
+            "explanation": "Claude must list relevant numbers before forming its conclusion."
+          }
+        }
+      },
+      "chapter9Blueprint": {
+        "title": "Chapter 9 Exercise: Prompt Blueprint",
+        "description": "Fill in the blueprint template for a friendly career coach, including role, goals, guardrails, workflow, and output format.",
+        "expectedOutput": "A multi-section prompt with headings or XML tags that can be reused across coaching scenarios.",
+        "hints": {
+          "0": "Start with persona and mission so Claude knows who it is before acting.",
+          "1": "State guardrails and escalation paths explicitly.",
+          "2": "Close with precise output structure (tags, JSON, or markdown headings)."
+        },
+        "variations": {
+          "generic": {
+            "name": "Generic Prompt",
+            "explanation": "Unstructured instructions that feel bland and inconsistent."
+          },
+          "structured": {
+            "name": "Structured Blueprint",
+            "explanation": "Uses labeled sections for role, workflow, and output."
+          }
+        }
+      },
+      "chapter10Chaining": {
+        "title": "Chapter 10 Exercise: Chain + Tool",
+        "description": "Write instructions that make Claude brainstorm, call a calculator tool, and then deliver a verified answer in a final section.",
+        "expectedOutput": "Claude produces 〈analysis〉 thinking, emits a calculator call, consumes the tool result, and responds inside 〈final〉 tags.",
+        "hints": {
+          "0": "Explain exactly when to call the tool and what arguments to send.",
+          "1": "Use XML tags or headings to separate analysis from the user-facing answer.",
+          "2": "Require Claude to report if verification fails or data is missing."
+        },
+        "variations": {
+          "singleShot": {
+            "name": "Single-Shot Answer",
+            "explanation": "Claude answers immediately with no verification."
+          },
+          "chainAndTool": {
+            "name": "Chain + Tool Pattern",
+            "explanation": "Claude reasons, calls the tool, and only then replies to the user."
+          }
+        }
+      }
     }
   },
   "playground": {
@@ -903,6 +1074,108 @@
           "0": "Choose examples that represent the desired output clearly",
           "1": "Use 2-3 examples for best results",
           "2": "Maintain consistent formatting across all examples"
+        }
+      }
+    },
+    "advanced": {
+      "hallucinationGuardrails": {
+        "title": "Hallucination Guardrails",
+        "hints": {
+          "0": "Give Claude literal instructions for how to respond when evidence is missing.",
+          "1": "Bundle “find evidence” and “answer” into separate, clearly labeled steps.",
+          "2": "Use low temperature or system prompts that prioritize accuracy over creativity."
+        },
+        "examples": {
+          "allowUnknown": {
+            "name": "Allow Unknown Responses",
+            "description": "Practice adding refusal options and fallback language to fact-heavy questions.",
+            "variations": {
+              "temperature": {
+                "name": "Temperature Guardrail",
+                "explanation": "Demonstrates how lowering randomness stabilizes factual answers."
+              },
+              "quoteFirst": {
+                "name": "Quote-First Flow",
+                "explanation": "Requires Claude to surface evidence before composing the answer."
+              }
+            }
+          }
+        }
+      },
+      "complexBlueprints": {
+        "title": "Complex Prompt Blueprints",
+        "hints": {
+          "0": "Keep sections short and labeled so stakeholders can edit them.",
+          "1": "Document guardrails next to the workflow so Claude always sees the constraints.",
+          "2": "Template variables ({{ROLE}}, {{QUESTION}}) make the prompt reusable."
+        },
+        "examples": {
+          "careerCoach": {
+            "name": "Career Coach Blueprint",
+            "description": "A friendly coaching template that highlights persona, workflow, and output formatting.",
+            "variations": {
+              "brief": {
+                "name": "Brief Prompt",
+                "explanation": "Quick instructions without structure for comparison."
+              },
+              "blueprint": {
+                "name": "Full Blueprint",
+                "explanation": "Includes labeled sections and placeholders."
+              }
+            }
+          },
+          "auditBot": {
+            "name": "Compliance Audit Bot",
+            "description": "A risk/compliance template that enforces step-by-step checks and JSON output.",
+            "variations": {
+              "linear": {
+                "name": "Linear Instructions",
+                "explanation": "Single paragraph without tags."
+              },
+              "sectioned": {
+                "name": "Sectioned Template",
+                "explanation": "Shows how 〈checks〉, 〈steps〉, and 〈format〉 blocks keep the audit workflow organized."
+              }
+            }
+          }
+        }
+      },
+      "workflowOrchestration": {
+        "title": "Workflow Orchestration",
+        "hints": {
+          "0": "Label each phase (analysis, tool call, final) so you can debug the flow.",
+          "1": "Describe tool schemas and provide placeholders for arguments.",
+          "2": "Ground final answers in retrieved snippets with citations."
+        },
+        "examples": {
+          "promptChaining": {
+            "name": "Prompt Chaining Pattern",
+            "description": "Have Claude think, verify with a tool, then publish the response.",
+            "variations": {
+              "singleStep": {
+                "name": "Single Step",
+                "explanation": "Baseline with no chaining to compare against."
+              },
+              "multiTool": {
+                "name": "Multi-Tool Flow",
+                "explanation": "Includes analysis, tool request, and final format placeholders."
+              }
+            }
+          },
+          "searchRetrieval": {
+            "name": "Search & Retrieval",
+            "description": "Generate search queries, summarize hits, then synthesize a grounded answer.",
+            "variations": {
+              "noGrounding": {
+                "name": "No Grounding",
+                "explanation": "Shows what happens when you answer without retrieved context."
+              },
+              "withCitations": {
+                "name": "Grounded with Citations",
+                "explanation": "Adds 〈cite〉 tags or snippet IDs to every fact so the synthesized answer stays grounded."
+              }
+            }
+          }
         }
       }
     }

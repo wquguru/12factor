@@ -1,10 +1,12 @@
 import { Course } from './types';
 import { fundamentalsCourse } from './fundamentals';
 import { intermediateCourse } from './intermediate';
+import { advancedCourse } from './advanced';
 
 export const courses: Record<string, Course> = {
   fundamentals: fundamentalsCourse,
-  intermediate: intermediateCourse
+  intermediate: intermediateCourse,
+  advanced: advancedCourse
 };
 
 export const getCourse = (id: string): Course | undefined => {
@@ -22,3 +24,4 @@ export const getCourseIds = (): string[] => {
 export * from './types';
 export * from './fundamentals';
 export * from './intermediate';
+export * from './advanced';

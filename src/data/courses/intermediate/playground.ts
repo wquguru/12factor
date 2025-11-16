@@ -62,8 +62,7 @@ export const intermediatePlayground: PlaygroundScenario[] = [
     ui: {
       archetype: 'structured',
       allowTemplate: true,
-      allowPrefill: true,
-      expectedFormat: 'xml'
+      allowPrefill: true
     },
     examples: [
       {

@@ -49,7 +49,7 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
   const tBase = useTranslations('promptEngineering');
   
   // Custom translation function to handle double brackets
-  const t = useCallback((key: string) => {
+  const t = useCallback((key: string, values?: Record<string, string | number>) => {
     try {
       const translated = tBase.raw(key);
       // Check if translation contains double brackets (literal text)
@@ -58,15 +58,16 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
         return translated;
       }
       // Otherwise use normal translation
-      return tBase(key);
+      return tBase(key, values);
     } catch {
       // Fallback to key if translation fails
       return key;
     }
   }, [tBase]);
   const [systemPrompt, setSystemPrompt] = useState(mode === 'practice' ? '' : (example.systemPrompt || ''));
-  const [userPrompt, setUserPrompt] = useState(mode === 'practice' ? '' : example.userPrompt);
-  const [promptTemplate, setPromptTemplate] = useState(mode === 'practice' ? '' : example.userPrompt);
+  const initialPrompt = mode === 'practice' ? '' : (example.userPrompt || '');
+  const [userPrompt, setUserPrompt] = useState(initialPrompt);
+  const [promptTemplate, setPromptTemplate] = useState(initialPrompt);
   const [templateVariables, setTemplateVariables] = useState<Record<string, string>>({});
   const [hasTemplateVariables, setHasTemplateVariables] = useState(false);
   const [prefill, setPrefill] = useState('');
@@ -83,19 +84,30 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
 
   const providedUI: UIConfig | undefined = example.ui || ui;
 
+  // Detect expected output format from a prompt/description
+  const detectFormat = useCallback((text: string, description?: string): 'xml' | 'json' | null => {
+    if (!text) return null;
+    const containsXml = /<[A-Za-z][\w:-]*>/.test(text);
+    const mentionsJson = text.toLowerCase().includes('json') || (description || '').toLowerCase().includes('json');
+    if (containsXml) return 'xml';
+    if (mentionsJson) return 'json';
+    return null;
+  }, []);
+
   const resolvedUI = useMemo<UIConfig>(() => {
     const templateRegex = /\{\{[^}]+\}\}/;
-    const containsTemplate = templateRegex.test(example.userPrompt);
-    const containsXml = /<[A-Za-z][\w:-]*>/.test(example.userPrompt);
-    const mentionsJson = example.userPrompt.toLowerCase().includes('json') || example.description.toLowerCase().includes('json');
+    const promptText = example.userPrompt || '';
+    const descriptionText = example.description || '';
+    const containsTemplate = templateRegex.test(promptText);
+    const inferredFormat = detectFormat(promptText, descriptionText);
     const mentionsChain = (example.title + example.description).toLowerCase().includes('chain');
 
     const base: UIConfig = {
       showExamplesPane: example.variations.length > 0,
       allowSystemPrompt: Boolean(example.systemPrompt || example.variations.some(v => v.systemPrompt !== undefined)),
       allowTemplate: containsTemplate,
-      allowPrefill: containsXml || mentionsJson,
-      expectedFormat: containsXml ? 'xml' : mentionsJson ? 'json' : null,
+      allowPrefill: inferredFormat !== null,
+      expectedFormat: inferredFormat,
       allowChaining: mentionsChain
     };
 
@@ -112,7 +124,24 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
     }
 
     return merged;
-  }, [example.description, example.systemPrompt, example.title, example.userPrompt, example.variations, providedUI]);
+  }, [detectFormat, example.description, example.systemPrompt, example.title, example.userPrompt, example.variations, providedUI]);
+
+  const promptForFormat = useMemo(() => {
+    if (promptTemplate && promptTemplate.trim().length > 0) {
+      return promptTemplate;
+    }
+    if (selectedVariation !== null && example.variations[selectedVariation]) {
+      return example.variations[selectedVariation].prompt;
+    }
+    return example.userPrompt || '';
+  }, [promptTemplate, selectedVariation, example.variations, example.userPrompt]);
+
+  const dynamicExpectedFormat = useMemo(
+    () => detectFormat(promptForFormat, example.description),
+    [detectFormat, promptForFormat, example.description]
+  );
+
+  const effectiveExpectedFormat = dynamicExpectedFormat || providedUI?.expectedFormat || resolvedUI.expectedFormat || null;
 
   // Extract template variables from a prompt
   const extractTemplateVariables = (prompt: string): string[] => {
@@ -151,8 +180,9 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
 
   // Update prompts when example changes (e.g., when navigating between cards)
   useEffect(() => {
+    const nextPrompt = mode === 'practice' ? '' : (example.userPrompt || '');
     setSystemPrompt(mode === 'practice' ? '' : (example.systemPrompt || ''));
-    setPromptTemplate(mode === 'practice' ? '' : example.userPrompt);
+    setPromptTemplate(nextPrompt);
     setPrefill('');
     setConversation([]);
     setChainMode(resolvedUI.allowChaining ?? false);
@@ -160,11 +190,10 @@ export default function InteractivePromptEditor({ example, mode = 'practice', ui
     setShowAdvancedControls(false);
 
     // Check for template variables in the initial prompt
-    const initialTemplate = mode === 'practice' ? '' : example.userPrompt;
-    updateTemplateVariables(initialTemplate);
+    updateTemplateVariables(nextPrompt);
 
     // Set initial user prompt
-    setUserPrompt(mode === 'practice' ? '' : example.userPrompt);
+    setUserPrompt(nextPrompt);
     setCurrentOutput('');
     setAnalysisResult(null);
     setSelectedVariation(null);
@@ -334,11 +363,12 @@ AI输出: ${truncatedOutput}
 
   // Validate output format when it changes
   useEffect(() => {
-    if (!currentOutput || !resolvedUI.expectedFormat) {
-      setFormatCheck(prev => ({ ...prev, status: null, kind: resolvedUI.expectedFormat || null }));
+    const formatToCheck = effectiveExpectedFormat;
+    if (!currentOutput || !formatToCheck) {
+      setFormatCheck(prev => ({ ...prev, status: null, kind: formatToCheck || null }));
       return;
     }
-    if (resolvedUI.expectedFormat === 'json') {
+    if (formatToCheck === 'json') {
       try {
         JSON.parse(currentOutput);
         setFormatCheck({ kind: 'json', status: 'valid' });
@@ -346,7 +376,7 @@ AI输出: ${truncatedOutput}
         const errorMessage = e instanceof Error ? e.message : 'JSON parse error';
         setFormatCheck({ kind: 'json', status: 'invalid', message: errorMessage });
       }
-    } else if (resolvedUI.expectedFormat === 'xml') {
+    } else if (formatToCheck === 'xml') {
       try {
         if (typeof DOMParser === 'undefined') {
           setFormatCheck({ kind: 'xml', status: null });
@@ -365,7 +395,7 @@ AI输出: ${truncatedOutput}
         setFormatCheck({ kind: 'xml', status: 'invalid', message: errorMessage });
       }
     }
-  }, [currentOutput, resolvedUI.expectedFormat]);
+  }, [currentOutput, effectiveExpectedFormat]);
 
   return (
     <div className="border border-stone-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 overflow-hidden">
@@ -696,8 +726,8 @@ AI输出: ${truncatedOutput}
                   }`}
                 >
                   {formatCheck.status === 'valid'
-                    ? `${formatCheck.kind?.toUpperCase()} ${t('formatValid') || 'format valid'}`
-                    : `${formatCheck.kind?.toUpperCase()} ${t('formatInvalid') || 'format invalid'}`}
+                    ? t('formatValid', { format: formatCheck.kind!.toUpperCase() })
+                    : t('formatInvalid', { format: formatCheck.kind!.toUpperCase() })}
                 </div>
               )}
             </div>

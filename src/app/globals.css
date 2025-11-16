@@ -304,6 +304,19 @@ html {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 640px) {
+  /* Softer card edges on mobile to reduce visual noise */
+  .modern-card {
+    border-width: 0.5px;
+    border-color: rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+  }
+
+  .dark .modern-card {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+}
+
 /* Stats Display */
 .stat-number {
   font-size: 4rem;

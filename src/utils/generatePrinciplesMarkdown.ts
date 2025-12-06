@@ -1,5 +1,3 @@
-import type { IntlMessages } from 'next-intl';
-
 interface PrincipleData {
   name: string;
   concept: string;
@@ -17,7 +15,7 @@ interface StageData {
  * organized by the 4 stages
  */
 export function generatePrinciplesMarkdown(
-  messages: IntlMessages,
+  messages: Record<string, unknown>,
   locale: string
 ): string {
   const isZh = locale === 'zh';

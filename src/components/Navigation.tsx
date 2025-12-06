@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronDownIcon, GlobeAltIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import SocialShare from './SocialShare';
 import ThemeToggle from './ThemeToggle';
+import CopyPrinciplesButton from './CopyPrinciplesButton';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function Navigation() {
@@ -118,6 +119,9 @@ export default function Navigation() {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
+            {/* Copy Principles Button */}
+            <CopyPrinciplesButton className="hidden lg:flex" />
+
             {/* GitHub Button - Mobile/Tablet only */}
             <a
               href="https://github.com/wquguru/12factor"
@@ -131,7 +135,7 @@ export default function Navigation() {
               </svg>
               <span className="hidden sm:inline">{t('github')}</span>
             </a>
-            
+
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
@@ -197,6 +201,9 @@ export default function Navigation() {
               
               {/* Language and theme controls */}
               <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                <div className="flex items-center justify-between mb-4">
+                  <CopyPrinciplesButton />
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">

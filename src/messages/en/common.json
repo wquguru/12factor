@@ -16,6 +16,10 @@
       "english": "English"
     },
     "github": "GitHub",
+    "copyPrinciples": "Copy Principles",
+    "copyPrinciplesShort": "Copy",
+    "copied": "Copied!",
+    "copyFailed": "Copy failed",
     "footer": {
       "copyright": "12Factor",
       "author": "@wquguru",

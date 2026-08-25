@@ -25,16 +25,22 @@ interface Question {
 
 interface FillBlankQuestionProps {
   question: Question;
-  onAnswer: (answer: string[]) => void;
+  onAnswer: (answer: string[] | null) => void;
 }
 
 function FillBlankQuestion({ question, onAnswer }: FillBlankQuestionProps) {
-  const [blanks, setBlanks] = useState<string[]>(['', '']);
-  
+  // One slot per blank in this question, not a hardcoded two.
+  const blankCount = question.text.split('___').length - 1;
+  const [blanks, setBlanks] = useState<string[]>(() => Array(blankCount).fill(''));
+
+  // Report an answer only once every blank has content. Previously this fired
+  // on mount with ['', ''], which made an untouched question look answered:
+  // "next" was enabled, and timed mode auto-submitted the empty strings.
   useEffect(() => {
-    onAnswer(blanks);
+    const complete = blanks.length > 0 && blanks.every((b) => b.trim() !== '');
+    onAnswer(complete ? blanks : null);
   }, [blanks, onAnswer]);
-  
+
   const updateBlank = (index: number, value: string) => {
     const newBlanks = [...blanks];
     newBlanks[index] = value;
@@ -82,7 +88,7 @@ export default function QuizPage() {
   const locale = useLocale() as 'en' | 'zh';
   const shouldReduceMotion = useReducedMotion();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<(number | string | string[])[]>([]);
+  const [answers, setAnswers] = useState<(number | string | string[] | null)[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | string | string[] | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [quizMode, setQuizMode] = useState<'normal' | 'timed' | 'challenge' | 'adaptive'>('normal');
@@ -527,75 +533,62 @@ export default function QuizPage() {
     return generateQuestions();
   });
 
-  // Timer effect for timed mode - moved to top level
+  // Countdown only. The previous version also nested a 100 ms auto-submit
+  // inside this effect whose timeout was never cleared, so it could fire from a
+  // stale closure and double-submit alongside a manual "next" click.
   useEffect(() => {
-    if (quizMode === 'timed' && timeLeft > 0 && !showResults && !showQuizModeSelect) {
-      const timer = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-      
-      if (timeLeft === 1) {
-        // Auto-submit when time runs out
-        setTimeout(() => {
-          if (selectedAnswer !== null) {
-            const newAnswers = [...answers, selectedAnswer];
-            setAnswers(newAnswers);
-            
-            // Check if answer is correct for streak tracking
-            const question = questions[currentQuestion];
-            const isCorrect = checkAnswer(selectedAnswer, question.correct, question.type);
-            setStreak(isCorrect ? streak + 1 : 0);
+    if (quizMode !== 'timed' || showResults || showQuizModeSelect) return;
+    if (timeLeft <= 0) return;
+    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [timeLeft, quizMode, showResults, showQuizModeSelect]);
 
-            if (currentQuestion < questions.length - 1) {
-              setCurrentQuestion(currentQuestion + 1);
-              setSelectedAnswer(null);
-              setTimeLeft(30); // Reset timer for next question
-              // Scroll to top when auto-submitting in timed mode
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-              setShowResults(true);
-            }
-          }
-        }, 100);
-      }
-      
-      return () => clearTimeout(timer);
-    }
-  }, [timeLeft, quizMode, showResults, showQuizModeSelect, selectedAnswer, answers, currentQuestion, questions, streak]);
 
-  const handleAnswerSelect = (answer: number | string | string[]) => {
+  // Time up: submit whatever is selected, including nothing. The old code only
+  // advanced `if (selectedAnswer !== null)`, so running out of time without
+  // choosing left the quiz sitting on a dead 0:00 timer.
+  useEffect(() => {
+    if (quizMode !== 'timed' || showResults || showQuizModeSelect) return;
+    if (timeLeft > 0) return;
+    submitAnswer(selectedAnswer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeLeft, quizMode, showResults, showQuizModeSelect]);
+
+  const handleAnswerSelect = (answer: number | string | string[] | null) => {
     setSelectedAnswer(answer);
   };
 
-  const handleNextQuestion = () => {
-    if (selectedAnswer !== null) {
-      const newAnswers = [...answers, selectedAnswer];
-      setAnswers(newAnswers);
-      
-      // Check if answer is correct for streak tracking
-      const question = questions[currentQuestion];
-      const isCorrect = checkAnswer(selectedAnswer, question.correct, question.type);
-      setStreak(isCorrect ? streak + 1 : 0);
+  // Records `answer` (null means the question ran out of time unanswered) and
+  // moves on. Both the button and the timer go through here so the answers
+  // array always stays index-aligned with `questions`.
+  const submitAnswer = (answer: number | string | string[] | null) => {
+    const question = questions[currentQuestion];
+    const isCorrect = answer !== null && checkAnswer(answer, question.correct, question.type);
+    setAnswers((prev) => [...prev, answer]);
+    setStreak((prev) => (isCorrect ? prev + 1 : 0));
 
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedAnswer(null);
-        if (quizMode === 'timed') {
-          setTimeLeft(30); // Reset timer for next question
-        }
-        // Scroll to top when moving to next question
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        setShowResults(true);
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1);
+      setSelectedAnswer(null);
+      if (quizMode === 'timed') {
+        setTimeLeft(30);
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setShowResults(true);
     }
+  };
+
+  const handleNextQuestion = () => {
+    if (selectedAnswer === null) return;
+    submitAnswer(selectedAnswer);
   };
   
 
   const calculateScore = () => {
     return answers.reduce((score: number, answer, index) => {
       const question = questions[index];
-      const isCorrect = checkAnswer(answer, question.correct, question.type);
+      const isCorrect = answer !== null && checkAnswer(answer, question.correct, question.type);
       return score + (isCorrect ? 1 : 0);
     }, 0);
   };
@@ -988,7 +981,7 @@ export default function QuizPage() {
       
       case 'fill-blank':
         return (
-          <FillBlankQuestion question={question} onAnswer={handleAnswerSelect} />
+          <FillBlankQuestion key={question.id} question={question} onAnswer={handleAnswerSelect} />
         );
       
       default:

@@ -21,12 +21,14 @@ export default function FlashcardsPage() {
 
   const currentPrinciple = principles[currentIndex];
 
-  // Mark the card being viewed as "learning". Writes go straight to the store,
-  // so this effect updates an external system rather than calling setState.
+  // Viewing a card promotes it from "not started" to "learning" — and only
+  // that transition. The old condition was `status !== 'learning'`, which also
+  // matched 'mastered' and 'needs_review', so marking a card mastered was
+  // immediately undone by this effect and the button appeared to do nothing.
   useEffect(() => {
     if (progress.length === 0) return;
     const current = progress.find(p => p.principleId === currentPrinciple.id);
-    if (current?.status !== 'learning') {
+    if (current?.status === 'not_started') {
       store.setProgress(progress.map(p =>
         p.principleId === currentPrinciple.id
           ? { ...p, status: 'learning' as const, lastReviewed: new Date() }
@@ -35,14 +37,16 @@ export default function FlashcardsPage() {
     }
   }, [currentIndex, currentPrinciple, progress]);
 
+  // Functional updates: handleNext also runs from a 500 ms timeout after
+  // marking a card, by which time a captured `currentIndex` could be stale.
   const handleNext = () => {
     setIsFlipped(false); // always show the front of the next card
-    setCurrentIndex((currentIndex + 1) % principles.length);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
     setIsFlipped(false);
-    setCurrentIndex((currentIndex - 1 + principles.length) % principles.length);
+    setCurrentIndex((prev) => prev - 1);
   };
 
   const handleFlip = () => {

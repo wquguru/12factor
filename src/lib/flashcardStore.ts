@@ -34,6 +34,32 @@ function makeInitialProgress(): UserProgress[] {
   }));
 }
 
+/**
+ * JSON has no Date type, so `lastReviewed` comes back as a string; revive it so
+ * the stored shape actually matches UserProgress. Entries are also reconciled
+ * against the current principle list, so adding a principle later cannot leave
+ * a card with no progress row (which would render as a blank status).
+ */
+function reconcile(parsed: unknown): UserProgress[] {
+  const stored = new Map<number, Partial<UserProgress>>();
+  if (Array.isArray(parsed)) {
+    for (const entry of parsed) {
+      if (entry && typeof entry.principleId === 'number') stored.set(entry.principleId, entry);
+    }
+  }
+  return principles.map((p) => {
+    const prev = stored.get(p.id);
+    const reviewed = prev?.lastReviewed;
+    return {
+      principleId: p.id,
+      status: prev?.status ?? 'not_started',
+      lastReviewed: reviewed ? new Date(reviewed) : new Date(),
+      correctAnswers: prev?.correctAnswers ?? 0,
+      totalAttempts: prev?.totalAttempts ?? 0,
+    };
+  });
+}
+
 let progressRaw: string | null = null;
 let progressValue: UserProgress[] = [];
 
@@ -52,7 +78,7 @@ export function getProgress(): UserProgress[] {
   if (raw !== progressRaw) {
     progressRaw = raw;
     try {
-      progressValue = JSON.parse(raw) as UserProgress[];
+      progressValue = reconcile(JSON.parse(raw));
     } catch {
       progressValue = makeInitialProgress();
     }
@@ -84,10 +110,12 @@ export function getIndex(): number {
   return indexValue;
 }
 
-export function setIndex(next: number) {
-  indexValue = next;
+export function setIndex(next: number | ((current: number) => number)) {
+  const resolved = typeof next === 'function' ? next(getIndex()) : next;
+  indexValue = ((resolved % principles.length) + principles.length) % principles.length;
+  next = indexValue;
   try {
-    localStorage.setItem(INDEX_KEY, String(next));
+    localStorage.setItem(INDEX_KEY, String(indexValue));
   } catch {
     // Blocked storage: navigation still works, it just will not persist.
   }

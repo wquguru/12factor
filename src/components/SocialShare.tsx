@@ -30,12 +30,12 @@ export default function SocialShare({ className = '' }: SocialShareProps) {
     if (isMobile) {
       // 移动端尝试唤起Twitter App，如果没有安装则回退到网页
       try {
-        window.location.href = `twitter://user?screen_name=wquguru`;
+        window.location.assign(`twitter://user?screen_name=wquguru`);
         setTimeout(() => {
-          window.location.href = twitterUrl;
+          window.location.assign(twitterUrl);
         }, 1000);
       } catch {
-        window.location.href = twitterUrl;
+        window.location.assign(twitterUrl);
       }
     } else {
       // 桌面端在新窗口打开

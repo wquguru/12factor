@@ -64,6 +64,19 @@ function FillBlankQuestion({ question, onAnswer }: FillBlankQuestionProps) {
 }
 
 export default function QuizPage() {
+  // Declared before first use: it is called from callbacks defined above
+  // its old position, which is a temporal-dead-zone hazard for a const.
+  const checkAnswer = (userAnswer: number | string | string[], correctAnswer: number | string | string[], type: string): boolean => {
+    if (type === 'fill-blank') {
+      if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+        return userAnswer.every((answer, index) => 
+          answer.toLowerCase().trim() === correctAnswer[index].toLowerCase().trim()
+        );
+      }
+    }
+    return userAnswer === correctAnswer;
+  };
+
   const t = useTranslations();
   const tQuiz = useTranslations('quiz');
   const locale = useLocale() as 'en' | 'zh';
@@ -578,16 +591,6 @@ export default function QuizPage() {
     }
   };
   
-  const checkAnswer = (userAnswer: number | string | string[], correctAnswer: number | string | string[], type: string): boolean => {
-    if (type === 'fill-blank') {
-      if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
-        return userAnswer.every((answer, index) => 
-          answer.toLowerCase().trim() === correctAnswer[index].toLowerCase().trim()
-        );
-      }
-    }
-    return userAnswer === correctAnswer;
-  };
 
   const calculateScore = () => {
     return answers.reduce((score: number, answer, index) => {

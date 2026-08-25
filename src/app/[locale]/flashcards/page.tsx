@@ -1,82 +1,48 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { principles } from '@/data/principles';
 import FlashCard from '@/components/FlashCard';
-import { UserProgress } from '@/types';
+import * as store from '@/lib/flashcardStore';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 export default function FlashcardsPage() {
   const t = useTranslations('flashcards');
   const locale = useLocale();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [progress, setProgress] = useState<UserProgress[]>([]);
+  // Progress and position live in localStorage; React subscribes to that store
+  // instead of copying it into state inside a mount effect.
+  const currentIndex = useSyncExternalStore(store.subscribe, store.getIndex, store.serverIndex);
+  const progress = useSyncExternalStore(store.subscribe, store.getProgress, store.serverProgress);
+  const setProgress = store.setProgress;
+  const setCurrentIndex = store.setIndex;
   const [isFlipped, setIsFlipped] = useState(false);
 
   const currentPrinciple = principles[currentIndex];
 
-  // Load progress and card states from localStorage
+  // Mark the card being viewed as "learning". Writes go straight to the store,
+  // so this effect updates an external system rather than calling setState.
   useEffect(() => {
-    const savedProgress = localStorage.getItem('flashcard-progress');
-    if (savedProgress) {
-      setProgress(JSON.parse(savedProgress));
-    } else {
-      // Initialize progress for all principles
-      const initialProgress: UserProgress[] = principles.map(p => ({
-        principleId: p.id,
-        status: 'not_started',
-        lastReviewed: new Date(),
-        correctAnswers: 0,
-        totalAttempts: 0
-      }));
-      setProgress(initialProgress);
-      localStorage.setItem('flashcard-progress', JSON.stringify(initialProgress));
-    }
-
-    // Removed loading card states - we want to always start with card front
-
-    // Load current index
-    const savedCurrentIndex = localStorage.getItem('flashcard-current-index');
-    if (savedCurrentIndex) {
-      setCurrentIndex(parseInt(savedCurrentIndex));
-    }
-  }, []);
-
-  // Update current card flip state when changing cards
-  useEffect(() => {
-    // Always start with the front of the card when changing to a different card
-    setIsFlipped(false);
-  }, [currentIndex]);
-
-  // Save current index to localStorage
-  useEffect(() => {
-    localStorage.setItem('flashcard-current-index', currentIndex.toString());
-  }, [currentIndex]);
-
-  // Update progress when viewing a card
-  useEffect(() => {
-    if (progress.length > 0) {
-      const currentPrincipleProgress = progress.find(p => p.principleId === currentPrinciple.id);
-      if (currentPrincipleProgress?.status !== 'learning') {
-        const updatedProgress = progress.map(p => 
-          p.principleId === currentPrinciple.id
-            ? { ...p, status: 'learning' as const, lastReviewed: new Date() }
-            : p
-        );
-        setProgress(updatedProgress);
-        localStorage.setItem('flashcard-progress', JSON.stringify(updatedProgress));
-      }
+    if (progress.length === 0) return;
+    const current = progress.find(p => p.principleId === currentPrinciple.id);
+    if (current?.status !== 'learning') {
+      store.setProgress(progress.map(p =>
+        p.principleId === currentPrinciple.id
+          ? { ...p, status: 'learning' as const, lastReviewed: new Date() }
+          : p
+      ));
     }
   }, [currentIndex, currentPrinciple, progress]);
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % principles.length);
+    setIsFlipped(false); // always show the front of the next card
+    setCurrentIndex((currentIndex + 1) % principles.length);
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + principles.length) % principles.length);
+    setIsFlipped(false);
+    setCurrentIndex((currentIndex - 1 + principles.length) % principles.length);
   };
 
   const handleFlip = () => {
@@ -92,7 +58,6 @@ export default function FlashcardsPage() {
         : p
     );
     setProgress(updatedProgress);
-    localStorage.setItem('flashcard-progress', JSON.stringify(updatedProgress));
     
     // Auto advance to next card after marking as mastered
     setTimeout(() => {
@@ -109,7 +74,6 @@ export default function FlashcardsPage() {
         : p
     );
     setProgress(updatedProgress);
-    localStorage.setItem('flashcard-progress', JSON.stringify(updatedProgress));
     
     // Auto advance to next card after marking as needs review  
     setTimeout(() => {

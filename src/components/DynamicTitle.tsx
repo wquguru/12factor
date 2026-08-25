@@ -6,7 +6,8 @@ import { useTranslations } from 'next-intl';
 
 export default function DynamicTitle() {
   const [scrollY, setScrollY] = useState(0);
-  const [titleState, setTitleState] = useState(0);
+  // Derived from scrollY during render — no effect, no cascading re-render.
+  const titleState = scrollY < 50 ? 0 : 1;
   const t = useTranslations('home.hero');
 
   useEffect(() => {
@@ -18,13 +19,6 @@ export default function DynamicTitle() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (scrollY < 50) {
-      setTitleState(0);
-    } else {
-      setTitleState(1);
-    }
-  }, [scrollY]);
 
   const titleVariants = [
     t('title'),

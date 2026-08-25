@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useCallback, useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -12,53 +12,70 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const prefersDark = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches;
+const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
- * `.dark` on <html> is the single source of truth for the theme — the CSS has
- * no prefers-color-scheme fallback, so nothing can disagree with this class.
+ * localStorage and matchMedia are external stores, so they are read through
+ * useSyncExternalStore rather than mirrored into state inside an effect —
+ * that avoids the cascading render react-hooks/set-state-in-effect warns about,
+ * and keeps the server snapshot explicit.
  */
-function apply(theme: Theme): 'light' | 'dark' {
-  const resolved: 'light' | 'dark' =
-    theme === 'system' ? (prefersDark() ? 'dark' : 'light') : theme;
+const listeners = new Set<() => void>();
+const emit = () => listeners.forEach((l) => l());
+
+function subscribeTheme(onChange: () => void) {
+  listeners.add(onChange);
+  // `storage` fires when another tab changes the preference.
+  window.addEventListener('storage', onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function readTheme(): Theme {
+  try {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
+  } catch {
+    // Blocked storage: fall through to the default.
+  }
+  return 'system';
+}
+
+function subscribeSystem(onChange: () => void) {
+  const mq = window.matchMedia(DARK_QUERY);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
+}
+
+const readSystem = (): 'light' | 'dark' =>
+  window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
+
+/** `.dark` on <html> is the single source of truth for the applied theme. */
+function applyClass(resolved: 'light' | 'dark') {
   document.documentElement.classList.toggle('dark', resolved === 'dark');
-  return resolved;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+  const theme = useSyncExternalStore(subscribeTheme, readTheme, () => 'system' as Theme);
+  const systemTheme = useSyncExternalStore(subscribeSystem, readSystem, () => 'light' as const);
+  const resolvedTheme: 'light' | 'dark' = theme === 'system' ? systemTheme : theme;
 
-  // Adopt the stored preference. The inline <head> script has already applied
-  // the correct class, so this only syncs React state with the DOM.
-  useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme | null;
-    const initial: Theme =
-      stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
-    setThemeState(initial);
-    setResolvedTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-  }, []);
-
-  // Follow the OS while (and only while) the preference is "system".
-  useEffect(() => {
-    if (theme !== 'system') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => setResolvedTheme(apply('system'));
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, [theme]);
+  // Keep the class in sync with what this render resolved. The inline <head>
+  // script already set it before first paint, so this is normally a no-op.
+  if (typeof document !== 'undefined') {
+    applyClass(resolvedTheme);
+  }
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
-    setResolvedTheme(apply(next));
     try {
       localStorage.setItem('theme', next);
       document.cookie = `theme=${next};path=/;max-age=31536000;SameSite=Lax`;
     } catch {
-      // Private mode / blocked storage: the theme still applies for this view.
+      // Private mode: the theme still applies for this view.
     }
+    emit();
   }, []);
 
   return (

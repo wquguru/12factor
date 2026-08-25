@@ -73,13 +73,13 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-50">
+    <nav className="bg-surface-1/80 backdrop-blur-lg border-b border-line sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2 text-xl font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
-              <div className="w-8 h-8 bg-gray-900 dark:bg-gray-100 rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white dark:border-gray-900 rounded"></div>
+            <Link href="/" className="flex items-center gap-2 text-xl font-medium text-t1 hover:text-t2 transition-colors">
+              <div className="w-8 h-8 bg-t1 rounded-lg flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-hero rounded"></div>
               </div>
               12Factor
             </Link>
@@ -90,7 +90,7 @@ export default function Navigation() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors relative inline-flex items-center gap-1"
+                className="text-sm font-medium text-t2 hover:text-t1 transition-colors relative inline-flex items-center gap-1"
               >
                 {item.name}
                 {item.href === '/prompt-engineering' && (
@@ -107,7 +107,7 @@ export default function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-lg text-t2 hover:text-t1 hover:bg-surface-2 transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -127,7 +127,7 @@ export default function Navigation() {
               href="https://github.com/wquguru/12factor"
               target="_blank"
               rel="noopener noreferrer"
-              className="lg:hidden flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors group"
+              className="lg:hidden flex items-center text-sm font-medium text-t2 hover:text-t1 transition-colors group"
               aria-label="Star on GitHub"
             >
               <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -139,18 +139,18 @@ export default function Navigation() {
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                className="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                className="flex items-center text-sm font-medium text-t2 hover:text-t1 transition-colors"
               >
                 <GlobeAltIcon className="h-4 w-4 mr-2" />
                 {locale === 'zh' ? t('languageLabels.chinese') : t('languageLabels.english')}
                 <ChevronDownIcon className="h-4 w-4 ml-1" />
               </button>
               {isLangMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                <div className="absolute right-0 mt-2 w-40 bg-surface-1 rounded-2xl shadow-xl border border-line z-50">
                   <Link
                     href={getNavigableHref(pathname)}
                     locale="en"
-                    className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-2xl transition-colors"
+                    className="block px-4 py-3 text-sm text-t2 hover:bg-surface-2 rounded-t-2xl transition-colors"
                     onClick={handleLanguageChange}
                   >
                     {t('languageLabels.english')}
@@ -158,7 +158,7 @@ export default function Navigation() {
                   <Link
                     href={getNavigableHref(pathname)}
                     locale="zh"
-                    className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-b-2xl transition-colors"
+                    className="block px-4 py-3 text-sm text-t2 hover:bg-surface-2 rounded-b-2xl transition-colors"
                     onClick={handleLanguageChange}
                   >
                     {t('languageLabels.chinese')}
@@ -177,14 +177,14 @@ export default function Navigation() {
         
         {/* Mobile menu overlay */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute inset-x-0 top-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-xl z-40 max-h-[calc(100vh-5rem)] overflow-y-auto overscroll-contain">
+          <div className="md:hidden absolute inset-x-0 top-full bg-surface-1 border-b border-line shadow-xl z-40 max-h-[calc(100vh-5rem)] overflow-y-auto overscroll-contain">
             <div className="max-w-6xl mx-auto">
               {/* Regular navigation items */}
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-6 py-4 text-base font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors relative"
+                  className="block px-6 py-4 text-base font-medium text-t1 hover:bg-surface-2 border-b border-line transition-colors relative"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <span className="inline-flex items-center gap-1">
@@ -200,23 +200,23 @@ export default function Navigation() {
               ))}
               
               {/* Language and theme controls */}
-              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+              <div className="px-6 py-4 bg-surface-2">
                 <div className="flex items-center justify-between mb-4">
                   <CopyPrinciplesButton />
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <GlobeAltIcon className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400" />
+                      <GlobeAltIcon className="h-4 w-4 mr-2 text-t2" />
                       <div className="flex space-x-2">
                         <Link
                           href={getNavigableHref(pathname)}
                           locale="en"
                           className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                            locale === 'en' 
-                              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' 
-                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                          }`}
+ locale === 'en' 
+ ? 'bg-t1 text-bg ' 
+ : 'text-t2 hover:bg-surface-2'
+ }`}
                           onClick={() => {
                             handleLanguageChange();
                             setIsMobileMenuOpen(false);
@@ -228,10 +228,10 @@ export default function Navigation() {
                           href={getNavigableHref(pathname)}
                           locale="zh"
                           className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
-                            locale === 'zh' 
-                              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900' 
-                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                          }`}
+ locale === 'zh' 
+ ? 'bg-t1 text-bg ' 
+ : 'text-t2 hover:bg-surface-2'
+ }`}
                           onClick={() => {
                             handleLanguageChange();
                             setIsMobileMenuOpen(false);

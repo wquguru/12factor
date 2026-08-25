@@ -120,16 +120,16 @@ export default function FlashcardsPage() {
   const currentProgress = progress.find(p => p.principleId === currentPrinciple.id);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-bg">
       {/* Hero Section */}
       <div className="hero-gradient relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-32 sm:pb-24">
           <div className="max-w-5xl">
-            <h1 className="hero-text text-white mb-8">
+            <h1 className="hero-text text-hero mb-8">
               {t('title')}
             </h1>
             
-            <p className="text-xl text-white/90 mb-12 max-w-3xl leading-relaxed font-light">
+            <p className="text-xl text-hero-2 mb-12 max-w-3xl leading-relaxed font-light">
               {t('subtitle')}
             </p>
             
@@ -137,7 +137,7 @@ export default function FlashcardsPage() {
               <Link
                 href="/principles"
                 locale={locale}
-                className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                className="btn-secondary btn-on-hero"
               >
                 {t('studyPrinciples')}
               </Link>
@@ -145,7 +145,7 @@ export default function FlashcardsPage() {
               <Link
                 href="/quiz"
                 locale={locale}
-                className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                className="btn-secondary btn-on-hero"
               >
                 {t('takeQuiz')}
               </Link>
@@ -159,13 +159,13 @@ export default function FlashcardsPage() {
             onClick={() => {
               document.getElementById('practice-content')?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-300 hover:scale-110"
+            className="group flex flex-col items-center text-hero-2 hover:text-hero transition-all duration-300 hover:scale-110"
             aria-label="Scroll to practice content"
           >
             <div className="text-xs sm:text-sm font-medium mb-2 opacity-80 group-hover:opacity-100 whitespace-nowrap px-2">
               {t('startPracticing')}
             </div>
-            <div className="w-10 h-10 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:border-white/50 transition-all duration-300">
+            <div className="w-10 h-10 rounded-full border border-hero-line bg-hero-glass backdrop-blur-sm flex items-center justify-center group-hover:bg-hero-glass group-hover:border-hero-line transition-all duration-300">
               <ChevronDownIcon className="h-5 w-5 animate-bounce" />
             </div>
           </button>
@@ -173,36 +173,36 @@ export default function FlashcardsPage() {
         
         {/* Stats Overlay */}
         <div className="absolute top-24 right-12 hidden lg:block">
-          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
-            <div className="stat-number text-white">{Math.round(((currentIndex + 1) / principles.length) * 100)}</div>
-            <div className="text-white/80 font-medium">{t('progress')}</div>
-            <div className="text-xs text-white/60 mt-1">{currentIndex + 1} {t('of')} {principles.length}</div>
+          <div className="bg-hero-glass backdrop-blur-sm rounded-3xl p-6 border border-hero-line">
+            <div className="stat-number text-hero">{Math.round(((currentIndex + 1) / principles.length) * 100)}</div>
+            <div className="text-hero-2 font-medium">{t('progress')}</div>
+            <div className="text-xs text-hero-2 mt-1">{currentIndex + 1} {t('of')} {principles.length}</div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div id="practice-content" className="py-32 bg-white dark:bg-gray-900">
+      <div id="practice-content" className="py-32 bg-bg">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
 
           {/* Progress Section */}
           <div className="mb-16">
-            <h2 className="text-6xl md:text-7xl font-light text-stone-900 dark:text-gray-100 mb-8 leading-tight">
+            <h2 className="text-6xl md:text-7xl font-light text-t1 mb-8 leading-tight">
               {t('practiceSession')}
             </h2>
-            <p className="text-lg text-stone-600 dark:text-gray-400 max-w-3xl font-light leading-relaxed mb-8">
+            <p className="text-lg text-t2 max-w-3xl font-light leading-relaxed mb-8">
               {t('practiceDescription')}
             </p>
             
             {/* Enhanced Progress bar */}
             <div className="mb-8">
-              <div className="flex justify-between text-sm text-stone-600 mb-4">
+              <div className="flex justify-between text-sm text-t2 mb-4">
                 <span className="font-medium">{t('learningProgress')}</span>
                 <span className="font-medium">{currentIndex + 1} / {principles.length}</span>
               </div>
-              <div className="w-full bg-stone-200 rounded-full h-3">
+              <div className="w-full bg-surface-3 rounded-full h-3">
                 <div 
-                  className="bg-gradient-to-r from-[#95a76f] to-[#95a76f]/80 h-3 rounded-full transition-all duration-300 shadow-lg"
+                  className="bg-accent-solid h-3 rounded-full transition-all duration-300 shadow-lg"
                   style={{ width: `${((currentIndex + 1) / principles.length) * 100}%` }}
                 />
               </div>
@@ -224,12 +224,12 @@ export default function FlashcardsPage() {
               onClick={handleMarkNeedsReview}
               disabled={!isFlipped}
               className={`px-8 py-4 rounded-full font-medium transition-all duration-200 ${
-                !isFlipped
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-50'
-                  : currentProgress?.status === 'needs_review'
-                  ? 'bg-stone-600 text-white shadow-lg transform scale-105'
-                  : 'bg-stone-100 hover:bg-stone-200 text-stone-800 hover:shadow-md cursor-pointer'
-              }`}
+ !isFlipped
+ ? 'bg-surface-3 text-t3 cursor-not-allowed opacity-50'
+ : currentProgress?.status === 'needs_review'
+ ? 'bg-t2 text-bg shadow-lg transform scale-105'
+ : 'bg-surface-2 hover:bg-surface-3 text-t1 hover:shadow-md cursor-pointer'
+ }`}
             >
               {t('needsReview')}
             </button>
@@ -237,12 +237,12 @@ export default function FlashcardsPage() {
               onClick={handleMarkMastered}
               disabled={!isFlipped}
               className={`px-8 py-4 rounded-full font-medium transition-all duration-200 ${
-                !isFlipped
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed opacity-50'
-                  : currentProgress?.status === 'mastered'
-                  ? 'bg-[#95a76f] text-white shadow-lg transform scale-105'
-                  : 'bg-[#95a76f]/20 hover:bg-[#95a76f]/30 text-[#95a76f] hover:shadow-md cursor-pointer'
-              }`}
+ !isFlipped
+ ? 'bg-surface-3 text-t3 cursor-not-allowed opacity-50'
+ : currentProgress?.status === 'mastered'
+ ? 'bg-accent-solid text-accent-on shadow-lg transform scale-105'
+ : 'bg-accent-wash hover:bg-accent-washHover text-accent hover:shadow-md cursor-pointer'
+ }`}
             >
               {t('mastered')}
             </button>

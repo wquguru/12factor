@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/providers/ThemeProvider';
+import { CheckIcon } from './icons';
 import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
 
@@ -34,14 +35,14 @@ export default function ThemeToggle() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="p-2 rounded-lg hover:bg-surface-2 transition-colors"
         aria-label="Toggle theme"
       >
-        <CurrentIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <CurrentIcon className="w-5 h-5 text-t2" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-36 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 py-1 z-50">
+        <div className="absolute right-0 mt-2 w-36 rounded-lg shadow-lg bg-surface-1 border border-line py-1 z-50">
           {themes.map(({ value, label, icon: Icon }) => (
             <button
               key={value}
@@ -49,14 +50,14 @@ export default function ThemeToggle() {
                 setTheme(value);
                 setIsOpen(false);
               }}
-              className={`w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
-                theme === value ? 'text-[#7c8c5d] dark:text-[#b8c896]' : 'text-gray-700 dark:text-gray-300'
-              }`}
+              className={`w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-surface-2 transition-colors ${
+ theme === value ? 'text-accent ' : 'text-t2 '
+ }`}
             >
               <Icon className="w-4 h-4" />
               <span className="text-sm">{label}</span>
               {theme === value && (
-                <span className="ml-auto text-xs">✓</span>
+                <CheckIcon className="w-4 h-4 ml-auto" />
               )}
             </button>
           ))}

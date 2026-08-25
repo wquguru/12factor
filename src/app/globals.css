@@ -2,339 +2,253 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Design tokens — single source of truth.
+   Neutrals: OKLCH hue 75°, chroma 0.007 (warm, identical in both modes).
+   Accent:   OKLCH hue 122°, chroma 0.078 (the existing brand sage).
+   Every text/background pair below meets WCAG AA (4.5:1);
+   control borders and focus rings meet 3:1.
+   Tokens are named by ROLE, never by colour — that is what lets the
+   light and dark values differ without any component knowing.
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --primary-green: #7c8c5d;
-  --secondary-green: #a4b67a;
-  --accent-green: #b8c896;
-  --light-green: #f3f5f0;
-  --neutral-light: #f7f8f7;
-  --neutral-medium: #e8ebe8;
-  --neutral-dark: #2d3025;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted: #6a6a6a;
-  --border-color: #e0e0e0;
-  --card-bg: #ffffff;
-  --card-hover: #fafafa;
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #fcf8f4;
+  --surface-3: #f3efeb;
+
+  --border: #e2dfdb;
+  --border-control: #95928e;   /* 3.10:1 on --bg */
+
+  --text-1: #110f0c;           /* 19.13:1 */
+  --text-2: #524f4c;           /*  8.13:1 */
+  --text-3: #6b6865;           /*  5.54:1 on --bg, 4.84:1 on --surface-3 (worst) */
+
+  --accent: #53622d;           /*  6.66:1 */
+  --accent-solid: #6d7c47;
+  --on-accent: #ffffff;        /*  4.54:1 on --accent-solid */
+  --accent-wash: #eef2e4;
+  --accent-hover: #3b4913;
+  --accent-wash-hover: #e6eade;
+  --ring: #6d7c47;             /*  4.54:1 */
+
+  --danger: #952922;
+  --danger-wash: #ffeeeb;
+  --warn: #814a00;
+  --warn-wash: #fcf2e4;
+  --info: #1c5d98;
+  --info-wash: #ebf5ff;
+  /* Ink for text sitting ON a filled semantic background.
+     Mirrors --on-accent: white in light, near-black in dark. */
+  --on-semantic: #ffffff;
+
+  /* Categorical — the four stages. Equal OKLCH L(45) and C(0.10),
+     hue alone separates them, so no stage reads as more important. */
+  --stage-1: #1f598a; --stage-1-wash: #e8f5ff;
+  --stage-2: #4c5d11; --stage-2-wash: #f1f6e6;
+  --stage-3: #6c4279; --stage-3-wash: #faeffd;
+  --stage-4: #804318; --stage-4-wash: #fff0e6;
+
+  --hero: linear-gradient(152deg, #3f4a22 0%, #4d5929 50%, #5f6d3a 100%);
+  --on-hero: #ffffff;          /* 9.49 → 5.62 across the sweep */
+  --on-hero-2: #e8ebe0;        /* 7.86 → 4.66 — solid, never white/60 */
+  --hero-ink: #3f4a22;         /* text on an --on-hero coloured chip */
+  --hero-chip: #c3d29a;
+  --hero-glass: rgba(255, 255, 255, .12);
+  --hero-line: rgba(255, 255, 255, .24);
+
+  --shadow: 0 1px 2px rgba(17,15,12,.05), 0 10px 30px -14px rgba(17,15,12,.22);
+  --shadow-lg: 0 2px 4px rgba(17,15,12,.06), 0 18px 44px -16px rgba(17,15,12,.3);
 }
 
-/* Dark mode with class selector (manual toggle) */
+/* The .dark class is the ONLY theme switch. The inline script in <head>
+   resolves system preference into this class before first paint, so a
+   prefers-color-scheme media query here would be a second, conflicting
+   source of truth (it used to rely on a .light class nothing ever set). */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #e8e8e8;
-  --primary-green: #9bb070;
-  --secondary-green: #b8c896;
-  --accent-green: #c9d4a8;
-  --light-green: #1a1d17;
-  --neutral-light: #1a1a1a;
-  --neutral-medium: #2a2a2a;
-  --neutral-dark: #3a3a3a;
-  --text-primary: #e8e8e8;
-  --text-secondary: #b8b8b8;
-  --text-muted: #888888;
-  --border-color: #333333;
-  --card-bg: #1a1a1a;
-  --card-hover: #222222;
+  color-scheme: dark;
+
+  --bg: #15120f;
+  --surface-1: #1f1c19;        /* L* +4.8 over --bg */
+  --surface-2: #2a2724;        /* L* +5.4 */
+  --surface-3: #2a2724;
+
+  --border: #383531;
+  --border-control: #66635f;   /* 3.12:1 on --bg */
+
+  --text-1: #eeebe6;           /* 15.69:1 */
+  --text-2: #a7a4a0;           /*  6.83:1 */
+  --text-3: #95928e;           /*  6.03:1 on --bg, 4.79:1 on --surface-2 (worst) */
+
+  --accent: #a8b982;           /*  8.82:1 */
+  --accent-solid: #a8b982;
+  --on-accent: #15120f;        /*  8.82:1 */
+  --accent-wash: #232a18;
+  --accent-hover: #c6d5a5;
+  --accent-wash-hover: #2c3023;
+  --ring: #a8b982;
+
+  --danger: #f59185;
+  --danger-wash: #361b18;
+  --warn: #e4b066;
+  --warn-wash: #2f210d;
+  --info: #87bcf4;
+  --info-wash: #192837;
+  --on-semantic: #15120f;
+
+  --stage-1: #8cbdec; --stage-1-wash: #172533;
+  --stage-2: #aec083; --stage-2-wash: #212715;
+  --stage-3: #cea7db; --stage-3-wash: #2b1f2e;
+  --stage-4: #e4a885; --stage-4-wash: #312015;
+
+  --hero: linear-gradient(152deg, #232a18 0%, #1c2114 50%, #191610 100%);
+  --on-hero: #eeebe6;
+  --on-hero-2: #b9b5ae;
+  --hero-ink: #15120f;
+  --hero-chip: #a8b982;
+  --hero-glass: rgba(238, 235, 230, .06);
+  --hero-line: rgba(238, 235, 230, .14);
+
+  --shadow: 0 1px 2px rgba(0,0,0,.55), 0 10px 30px -14px rgba(0,0,0,.8);
+  --shadow-lg: 0 2px 4px rgba(0,0,0,.6), 0 18px 44px -16px rgba(0,0,0,.9);
 }
 
-/* Dark mode with system preference (when not manually set) */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: #0a0a0a;
-    --foreground: #e8e8e8;
-    --primary-green: #9bb070;
-    --secondary-green: #b8c896;
-    --accent-green: #c9d4a8;
-    --light-green: #1a1d17;
-    --neutral-light: #1a1a1a;
-    --neutral-medium: #2a2a2a;
-    --neutral-dark: #3a3a3a;
-    --text-primary: #e8e8e8;
-    --text-secondary: #b8b8b8;
-    --text-muted: #888888;
-    --border-color: #333333;
-    --card-bg: #1a1a1a;
-    --card-hover: #222222;
-  }
+body {
+  font-family: var(--font-inter), var(--font-noto-sans-sc), system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-1);
+  transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
 }
 
-/* Prevent flash of unstyled content */
+/* Anti-FOUC mask. theme-script.tsx sets data-theme-ready in a `finally`,
+   and ships a <noscript> override, so this can never strand the page. */
 html:not([data-theme-ready]) body {
   visibility: hidden;
   opacity: 0;
 }
 
-body {
-  font-family: var(--font-inter), var(--font-noto-sans-sc), system-ui, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
-  transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
+/* One global focus ring, replacing the never-referenced .focus\:outline-blue.
+   :focus-visible so pointer clicks don't draw it. */
+:where(a, button, [role="button"], input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
-.preserve-3d {
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-}
+html { scroll-behavior: smooth; }
 
-.backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+.preserve-3d { transform-style: preserve-3d; -webkit-transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 
-/* WebView-specific styles for better compatibility */
 @supports not (transform-style: preserve-3d) {
-  .preserve-3d {
-    transform-style: flat;
-  }
-  
-  .backface-hidden {
-    backface-visibility: visible;
-  }
+  .preserve-3d { transform-style: flat; }
+  .backface-hidden { backface-visibility: visible; }
 }
 
-/* Additional WebView compatibility */
-.webview-compat {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: opacity, transform;
-}
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: var(--border-control) transparent; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: var(--border-control); border-radius: 3px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: var(--text-3); }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+/* ---------- Composite classes ---------- */
 
-/* Focus styles for accessibility */
-.focus\:outline-blue {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
-}
+.hero-gradient { background: var(--hero); }
 
-/* Custom scrollbar */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
-  border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(156, 163, 175, 0.7);
-}
-
-/* Typography System - inspired by Area design */
-.display-xl {
-  font-size: clamp(4rem, 8vw, 8rem);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-}
-
-.display-lg {
-  font-size: clamp(3rem, 6vw, 6rem);
-  font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-}
-
-.heading-xl {
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
-  font-weight: 600;
-  line-height: 1.1;
-}
-
-/* Modern card design - removed duplicate, see definition below */
-
-/* Area-inspired gradient backgrounds */
-.hero-gradient {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-}
-
-.dark .hero-gradient {
-  background: linear-gradient(135deg, #2a3020 0%, #1a2010 100%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) .hero-gradient {
-    background: linear-gradient(135deg, #2a3020 0%, #1a2010 100%);
-  }
-}
-
-/* Animation for page transitions */
-.page-transition {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-/* Button styles inspired by Area */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-  border: none;
-  border-radius: 50px;
-  color: white;
-  font-weight: 600;
-  padding: 16px 32px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(124, 140, 93, 0.3);
-}
-
-.dark .btn-primary {
-  background: linear-gradient(135deg, #95a76f 0%, #b8c896 100%);
-  box-shadow: 0 4px 20px rgba(149, 167, 111, 0.25);
-  color: #1a1a1a;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124, 140, 93, 0.4);
-}
-
-.dark .btn-primary:hover {
-  background: linear-gradient(135deg, #a5b77f 0%, #c8d8a6 100%);
-  box-shadow: 0 8px 30px rgba(149, 167, 111, 0.35);
-  transform: translateY(-2px);
-}
-
-/* Stats/metrics display */
-.metric-display {
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Enhanced card shadows */
-.card-shadow {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.card-shadow:hover {
-  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Area-inspired Design System - Variables already defined above */
-
-/* Hero Section Styles */
-.hero-gradient {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-}
-
-/* Large Typography */
 .hero-text {
   font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 800;
-  line-height: 0.9;
+  font-weight: 300;
+  line-height: 1.06;
   letter-spacing: -0.02em;
 }
 
-.section-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+.stat-number {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
-/* Button Styles - Primary button styles moved above to avoid duplication */
-
-.btn-secondary {
-  background-color: var(--light-green);
-  color: var(--primary-green);
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  border: 2px solid var(--primary-green);
-  cursor: pointer;
+.btn-primary {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  background: var(--accent-solid);
+  border: 1px solid transparent;
+  border-radius: 50px;
+  color: var(--on-accent);
+  font-weight: 600;
+  padding: 14px 30px;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.btn-primary:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
-.dark .btn-secondary {
-  background-color: var(--neutral-dark);
-  color: var(--secondary-green);
-  border-color: var(--secondary-green);
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--surface-1);
+  color: var(--text-1);
+  padding: 14px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  border: 1px solid var(--border-control);
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease;
 }
-
 .btn-secondary:hover {
-  background-color: var(--primary-green);
-  color: white;
+  background-color: var(--surface-2);
+  border-color: var(--text-3);
 }
 
-.dark .btn-secondary:hover {
-  background-color: var(--secondary-green);
-  color: var(--neutral-dark);
+/* Primary CTA on the hero: --accent-solid sits too close to the gradient's
+   own mid-tone to read as the primary action, so it inverts to the light ink. */
+.btn-hero-primary {
+  background: var(--on-hero);
+  color: var(--hero-ink);
+  border-color: transparent;
+}
+.btn-hero-primary:hover {
+  background: var(--on-hero-2);
+  color: var(--hero-ink);
 }
 
-/* Modern Cards */
+/* Variant for buttons sitting on the hero gradient. */
+.btn-on-hero {
+  background: var(--hero-glass);
+  border-color: var(--hero-line);
+  color: var(--on-hero);
+}
+.btn-on-hero:hover {
+  background: var(--hero-line);
+  border-color: var(--on-hero-2);
+  color: var(--on-hero);
+}
+
 .modern-card {
-  background: white;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  border: 1px solid var(--neutral-medium);
+  box-shadow: var(--shadow);
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
 }
-
-.dark .modern-card {
-  background: rgb(31, 41, 55); /* gray-800 */
-  border: 1px solid rgb(75, 85, 99); /* gray-600 */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
 .modern-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-.dark .modern-card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-color: var(--border-control);
+  box-shadow: var(--shadow-lg);
 }
 
 @media (max-width: 640px) {
-  /* Softer card edges on mobile to reduce visual noise */
-  .modern-card {
-    border-width: 0.5px;
-    border-color: rgba(0, 0, 0, 0.08);
-    padding: 1.5rem;
-  }
-
-  .dark .modern-card {
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-}
-
-/* Stats Display */
-.stat-number {
-  font-size: 4rem;
-  font-weight: 800;
-  color: var(--primary-green);
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 1.125rem;
-  color: var(--neutral-dark);
-  font-weight: 500;
-}
-
-/* Feature Grid */
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin: 3rem 0;
+  .modern-card { padding: 1.5rem; }
 }

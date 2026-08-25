@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CheckIcon } from './icons';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -22,11 +23,11 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
   };
 
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700">
+    <div className="border-b border-line">
       {/* Main Toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-6 py-4 text-base font-medium text-[#98a971] dark:text-[#98a971] hover:bg-[#98a971]/5 dark:hover:bg-[#98a971]/10 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 text-base font-medium text-accent hover:bg-accent-wash transition-colors"
       >
         <div className="flex items-center">
           <span>{t('more')}</span>
@@ -36,10 +37,10 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="bg-[#98a971]/5 dark:bg-[#98a971]/10">
+        <div className="bg-accent-wash">
           {/* Prompt Engineering Section */}
-          <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <div className="px-6 py-2 bg-surface-2 border-b border-line">
+            <h3 className="text-xs font-semibold text-t3 uppercase tracking-wider">
               {t('promptEngineering')}
             </h3>
           </div>
@@ -48,13 +49,13 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
           <Link
             href="/prompt-engineering"
             locale={locale}
-            className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+            className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
             onClick={handleLinkClick}
           >
-            <span className="text-blue-500">📖</span>
+            <span className="text-info">📖</span>
             <div>
               <div className="font-medium">{tPE('learningPath')}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-t3">
                 {tPE('learningPathDescription')}
               </div>
             </div>
@@ -96,28 +97,28 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
                   params: { course: course.content.id.toString() }
                 }}
                 locale={locale}
-                className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+                className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
                 onClick={handleLinkClick}
               >
-                <div className="w-6 h-6 bg-[#98a971]/10 border border-[#98a971]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#98a971] text-xs font-semibold">
+                <div className="w-6 h-6 bg-accent-wash border border-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-accent text-xs font-semibold">
                     {index + 1}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-medium">{getCourseTitle(course.content.id)}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                  <div className="text-xs text-t3 line-clamp-1">
                     {getCourseSummary(course.content.id)}
                   </div>
                 </div>
-                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+                <ChevronRightIcon className="h-4 w-4 text-t3" />
               </Link>
             );
           })}
 
           {/* 12Factor Methodology Section */}
-          <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-200 dark:border-gray-700 mt-2">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <div className="px-6 py-2 bg-surface-2 border-y border-line mt-2">
+            <h3 className="text-xs font-semibold text-t3 uppercase tracking-wider">
               12FACTOR METHODOLOGY
             </h3>
           </div>
@@ -126,15 +127,15 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
           <Link
             href="/principles"
             locale={locale}
-            className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+            className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
             onClick={handleLinkClick}
           >
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-gray-500">📋</span>
+              <span className="text-t3">📋</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-medium">{t('principles')}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-t3">
                 Learn 12 core principles and best practices
               </div>
             </div>
@@ -143,15 +144,15 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
           <Link
             href="/flashcards"
             locale={locale}
-            className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+            className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
             onClick={handleLinkClick}
           >
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-gray-500">🎴</span>
+              <span className="text-t3">🎴</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-medium">{t('flashcards')}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-t3">
                 Reinforce learning through interactive cards
               </div>
             </div>
@@ -160,23 +161,23 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
           <Link
             href="/quiz"
             locale={locale}
-            className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+            className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
             onClick={handleLinkClick}
           >
             <div className="w-6 h-6 flex items-center justify-center">
-              <span className="text-gray-500">✅</span>
+              <CheckIcon className="w-4 h-4 text-accent" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-medium">{t('quiz')}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-t3">
                 Test your understanding of 12Factor principles
               </div>
             </div>
           </Link>
 
           {/* Resources Section */}
-          <div className="px-6 py-2 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-200 dark:border-gray-700">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <div className="px-6 py-2 bg-surface-2 border-y border-line">
+            <h3 className="text-xs font-semibold text-t3 uppercase tracking-wider">
               RESOURCES
             </h3>
           </div>
@@ -185,7 +186,7 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
             href="https://github.com/wquguru/12factor"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-8 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-[#98a971]/10 dark:hover:bg-[#98a971]/15 transition-colors"
+            className="flex items-center gap-3 px-8 py-3 text-sm text-t2 hover:bg-accent-wash transition-colors"
             onClick={handleLinkClick}
           >
             <div className="w-6 h-6 flex items-center justify-center">
@@ -195,15 +196,15 @@ export default function MobilePromptEngineeringMenu({ onLinkClick }: MobilePromp
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-medium">GitHub Repository</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-t3">
                 View source code and contribute to the project
               </div>
             </div>
           </a>
 
           {/* Coming Soon */}
-          <div className="px-8 py-3 text-center border-t border-gray-200 dark:border-gray-600">
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="px-8 py-3 text-center border-t border-line">
+            <div className="text-xs text-t3">
               高级 & 实践课程即将推出 🚧
             </div>
           </div>

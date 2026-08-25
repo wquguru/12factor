@@ -441,21 +441,21 @@ AI输出: ${truncatedOutput}
   }, [currentOutput, effectiveExpectedFormat]);
 
   return (
-    <div className="border border-stone-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 overflow-hidden">
+    <div className="border border-line rounded-xl bg-surface-1 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 bg-gradient-to-r from-[#98a971]/10 to-[#98a971]/5 border-b border-stone-200 dark:border-gray-700">
+      <div className="px-6 py-4 bg-accent-wash border-b border-line">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-semibold text-t1 mb-2">
               {example.title}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-sm text-t2 leading-relaxed">
               {example.description}
             </p>
           </div>
           <button
             onClick={() => setShowHints(!showHints)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#98a971] hover:bg-[#98a971]/10 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-accent hover:bg-accent-wash rounded-lg transition-colors"
           >
             <LightBulbIcon className="h-4 w-4" />
             {showHints ? t('hideHints') : t('showHints')}
@@ -466,14 +466,14 @@ AI输出: ${truncatedOutput}
       <div className="p-6">
         {/* Hints */}
         {showHints && (
-          <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-3">
+          <div className="mb-6 p-4 bg-warn-wash border border-warn rounded-lg">
+            <h4 className="text-sm font-medium text-warn mb-3">
               💡 {t('learningTips')}
             </h4>
             <ul className="space-y-2">
               {example.hints.map((hint, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-yellow-700 dark:text-yellow-200">
-                  <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">•</span>
+                <li key={index} className="flex items-start gap-2 text-sm text-warn">
+                  <span className="text-warn mt-0.5">•</span>
                   {hint}
                 </li>
               ))}
@@ -484,7 +484,7 @@ AI输出: ${truncatedOutput}
         {/* Prompt Variations */}
         {example.variations.length > 0 && (resolvedUI.showExamplesPane ?? true) && (
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+            <h4 className="text-sm font-medium text-t1 mb-3">
               📝 {t('tryDifferentVariations')}
             </h4>
             <div className="grid gap-2 md:grid-cols-2">
@@ -493,13 +493,13 @@ AI输出: ${truncatedOutput}
                   key={index}
                   onClick={() => applyVariation(index)}
                   className={`p-3 text-left border rounded-lg transition-colors ${
-                    selectedVariation === index
-                      ? 'border-[#98a971] bg-[#98a971]/5 text-gray-900 dark:text-gray-100'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-[#98a971]/50 text-gray-700 dark:text-gray-300'
-                  }`}
+ selectedVariation === index
+ ? 'border-accent bg-accent-wash text-t1 '
+ : 'border-line hover:border-accent text-t2 '
+ }`}
                 >
                   <div className="font-medium text-sm mb-1">{variation.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{variation.explanation}</div>
+                  <div className="text-xs text-t3">{variation.explanation}</div>
                 </button>
               ))}
             </div>
@@ -511,13 +511,13 @@ AI输出: ${truncatedOutput}
           {/* Input */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <h4 className="text-sm font-medium text-t1">
                 🎯 {t('editPrompt')}
               </h4>
               <button
                 type="button"
                 onClick={() => setShowAdvancedControls(prev => !prev)}
-                className="text-xs text-[#98a971] hover:text-[#7a8259]"
+                className="text-xs text-accent hover:text-accent-hover"
               >
                 {showAdvancedControls ? (t('hideAdvancedControls') || 'Hide advanced') : (t('showAdvancedControls') || 'Show advanced')}
               </button>
@@ -526,7 +526,7 @@ AI输出: ${truncatedOutput}
             {/* System Prompt - show if exercise has one or if any variation has one */}
             {((resolvedUI.allowSystemPrompt ?? false) || showAdvancedControls || !!systemPrompt) && (
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-t2 mb-2">
                   {t('systemPrompt')}
                 </label>
                 <textarea
@@ -534,11 +534,11 @@ AI输出: ${truncatedOutput}
                   onChange={(e) => setSystemPrompt(e.target.value)}
                   placeholder={t('systemPromptPlaceholder')}
                   disabled={selectedVariation !== null && example.variations[selectedVariation]?.systemPrompt === ''}
-                  className={`w-full h-20 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-none ${
-                    selectedVariation !== null && example.variations[selectedVariation]?.systemPrompt === ''
-                      ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed opacity-60'
-                      : 'bg-white dark:bg-gray-800'
-                  }`}
+                  className={`w-full h-20 px-3 py-2 text-sm border border-line-control rounded-lg text-t1 focus:ring-2 focus:ring-accent focus:border-transparent resize-none ${
+ selectedVariation !== null && example.variations[selectedVariation]?.systemPrompt === ''
+ ? 'bg-surface-2 cursor-not-allowed opacity-60'
+ : 'bg-surface-1 '
+ }`}
                 />
               </div>
             )}
@@ -546,16 +546,16 @@ AI输出: ${truncatedOutput}
             {/* Prefill - Optional assistant seed to force opening tokens */}
             {((resolvedUI.allowPrefill ?? false) || showAdvancedControls || !!prefill) && (
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-t2 mb-2">
                   {t('prefillLabel') || 'Prefill (optional)'}
                 </label>
                 <textarea
                   value={prefill}
                   onChange={(e) => setPrefill(e.target.value)}
                   placeholder={t('prefillPlaceholder') || '<answer>'}
-                  className="w-full h-16 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-none font-mono"
+                  className="w-full h-16 px-3 py-2 text-sm border border-line-control rounded-lg bg-surface-1 text-t1 focus:ring-2 focus:ring-accent focus:border-transparent resize-none font-mono"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-t3 mt-1">
                   {t('prefillHint') || 'Seed the assistant reply (e.g., start within XML/JSON tags).'}
                 </p>
               </div>
@@ -563,7 +563,7 @@ AI输出: ${truncatedOutput}
 
             {/* Prompt Template - Always show, but label changes based on template variables */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-t2 mb-2">
                 {hasTemplateVariables ? t('promptTemplate') : t('userPrompt')}
               </label>
               <textarea
@@ -573,12 +573,12 @@ AI输出: ${truncatedOutput}
                   updateTemplateVariables(e.target.value);
                 }}
                 placeholder={hasTemplateVariables ? t('promptTemplatePlaceholder') : t('userPromptPlaceholder')}
-                className={`w-full h-24 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-none ${
-                  hasTemplateVariables ? 'font-mono' : ''
-                }`}
+                className={`w-full h-24 px-3 py-2 text-sm border border-line-control rounded-lg bg-surface-1 text-t1 focus:ring-2 focus:ring-accent focus:border-transparent resize-none ${
+ hasTemplateVariables ? 'font-mono' : ''
+ }`}
               />
               {hasTemplateVariables && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-t3 mt-1">
                   {t('templateHint')}
                 </p>
               )}
@@ -587,14 +587,14 @@ AI输出: ${truncatedOutput}
             {/* Template Variables - Only show when template variables exist */}
             {((resolvedUI.allowTemplate ?? false) || showAdvancedControls) && hasTemplateVariables && Object.keys(templateVariables).length > 0 && (
               <div className="space-y-3">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-xs font-medium text-t2">
                   {t('templateVariables')}
                 </label>
                 {Object.entries(templateVariables).map(([variable, value]) => {
                   const isLongText = /DOCUMENT|HISTORY|EMAIL|TEXT|CODE|RESEARCH|CONTEXT|DATA|ARTICLE|PASSAGE|CONTENT|MESSAGE|INPUT/i.test(variable) || value.length > 120;
                   return (
                     <div key={variable}>
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-t2 mb-1">
                         {variable}
                       </label>
                       {isLongText ? (
@@ -608,7 +608,7 @@ AI输出: ${truncatedOutput}
                             }));
                           }}
                           placeholder={t('enterValue')}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent resize-y"
+                          className="w-full px-3 py-2 text-sm border border-line-control rounded-lg bg-surface-1 text-t1 focus:ring-2 focus:ring-accent focus:border-transparent resize-y"
                         />
                       ) : (
                         <input
@@ -621,7 +621,7 @@ AI输出: ${truncatedOutput}
                             }));
                           }}
                           placeholder={t('enterValue')}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#98a971] focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-line-control rounded-lg bg-surface-1 text-t1 focus:ring-2 focus:ring-accent focus:border-transparent"
                         />
                       )}
                     </div>
@@ -633,15 +633,15 @@ AI输出: ${truncatedOutput}
             {/* Final Prompt Preview - Only show when template variables exist and are filled */}
             {hasTemplateVariables && Object.keys(templateVariables).length > 0 && (
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-t2 mb-2">
                   {t('finalPrompt')}
                 </label>
                 <textarea
                   value={userPrompt}
                   readOnly
-                  className="w-full h-20 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 cursor-default resize-none"
+                  className="w-full h-20 px-3 py-2 text-sm border border-line-control rounded-lg bg-surface-2 text-t1 cursor-default resize-none"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-t3 mt-1">
                   {t('finalPromptHint')}
                 </p>
               </div>
@@ -653,7 +653,7 @@ AI输出: ${truncatedOutput}
               {((resolvedUI.allowChaining ?? false) || showAdvancedControls) && (
                 <>
                   <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-xs font-medium text-t2">
                       <input
                         type="checkbox"
                         checked={chainMode}
@@ -661,19 +661,19 @@ AI输出: ${truncatedOutput}
                           setChainMode(e.target.checked);
                           if (!e.target.checked) setConversation([]);
                         }}
-                        className="w-4 h-4 text-[#98a971] border-gray-300 rounded focus:ring-1 focus:ring-[#98a971]"
+                        className="w-4 h-4 text-accent border-line-control rounded focus:ring-1 focus:ring-accent"
                       />
                       {t('chainModeLabel') || 'Chaining mode (keep conversation)'}
                     </label>
                     <button
                       onClick={() => setConversation([])}
                       disabled={!conversation.length}
-                      className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
+                      className="text-xs text-t3 hover:text-t1 disabled:opacity-50"
                     >
                       {t('clearConversation') || 'Clear'}
                     </button>
                   </div>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] text-t3">
                     {t('chainModeHint') || 'When enabled, each run appends to the conversation and is sent along with the next prompt.'}
                   </p>
                 </>
@@ -681,8 +681,8 @@ AI输出: ${truncatedOutput}
 
               {/* Error Display */}
               {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                <div className="p-3 bg-danger-wash border border-danger rounded-lg">
+                  <p className="text-sm text-danger">{error}</p>
                 </div>
               )}
               
@@ -690,7 +690,7 @@ AI输出: ${truncatedOutput}
                 <button
                   onClick={runPrompt}
                   disabled={isRunning || !userPrompt.trim()}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#98a971] text-white rounded-lg hover:bg-[#7a8259] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                  className="flex items-center gap-2 px-4 py-2 bg-accent-solid text-accent-on rounded-lg hover:bg-accent-solid disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   {isRunning ? (
                     <ArrowPathIcon className="h-4 w-4 animate-spin" />
@@ -702,7 +702,7 @@ AI输出: ${truncatedOutput}
                 
                 <button
                   onClick={resetToExample}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
+                  className="px-4 py-2 text-t2 border border-line-control rounded-lg hover:bg-surface-2 transition-colors text-sm"
                 >
                   {t('reset')}
                 </button>
@@ -710,13 +710,13 @@ AI输出: ${truncatedOutput}
             </div>
 
             {chainMode && (
-              <div className="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-3">
-                <h5 className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">
+              <div className="border border-dashed border-line-control rounded-lg p-3">
+                <h5 className="text-xs font-semibold text-t2 mb-2">
                   {t('conversationHistory') || 'Conversation history'}
                 </h5>
                 <div className="max-h-48 overflow-y-auto space-y-2">
                   {conversation.length === 0 && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-t3">
                       {t('emptyConversation') || 'No previous turns yet.'}
                     </p>
                   )}
@@ -724,12 +724,12 @@ AI输出: ${truncatedOutput}
                     <div
                       key={`${msg.role}-${index}`}
                       className={`p-2 rounded-lg text-xs whitespace-pre-wrap ${
-                        msg.role === 'user'
-                          ? 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-                          : 'bg-[#f5f9f0] dark:bg-gray-700 border border-[#98a971]/40'
-                      }`}
+ msg.role === 'user'
+ ? 'bg-surface-1 border border-line '
+ : 'bg-accent-wash border border-accent'
+ }`}
                     >
-                      <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+                      <div className="text-[10px] uppercase tracking-wide text-t3 mb-1">
                         {msg.role === 'user' ? t('userTurn') || 'User' : t('assistantTurn') || 'Assistant'}
                       </div>
                       {msg.content}
@@ -743,15 +743,15 @@ AI输出: ${truncatedOutput}
           {/* Output */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <h4 className="text-sm font-medium text-t1">
                 🤖 {t('aiResponse')}
               </h4>
               {analysisResult && (
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                  analysisResult === 'good'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                }`}>
+ analysisResult === 'good'
+ ? 'bg-accent-wash text-accent '
+ : 'bg-warn-wash text-warn  '
+ }`}>
                   {analysisResult === 'good' ? (
                     <CheckCircleIcon className="h-3 w-3" />
                   ) : (
@@ -763,10 +763,10 @@ AI输出: ${truncatedOutput}
               {formatCheck.kind && formatCheck.status && (
                 <div
                   className={`ml-2 px-2 py-1 rounded-full text-[11px] ${
-                    formatCheck.status === 'valid'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-                  }`}
+ formatCheck.status === 'valid'
+ ? 'bg-accent-wash text-accent'
+ : 'bg-danger-wash text-danger '
+ }`}
                 >
                   {formatCheck.status === 'valid'
                     ? t('formatValid', { format: formatCheck.kind!.toUpperCase() })
@@ -775,25 +775,25 @@ AI输出: ${truncatedOutput}
               )}
             </div>
             {formatCheck.status === 'invalid' && formatCheck.message && (
-              <p className="text-xs text-red-500 dark:text-red-300 mb-2">
+              <p className="text-xs text-danger mb-2">
                 {formatCheck.message}
               </p>
             )}
             
-            <div className="h-48 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-y-auto">
+            <div className="h-48 p-4 bg-surface-2 border border-line rounded-lg overflow-y-auto">
               {isRunning ? (
                 <div className="flex items-center justify-center h-full">
-                  <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-3 text-t3">
                     <ArrowPathIcon className="h-5 w-5 animate-spin" />
                     <span className="text-sm">{t('aiThinking')}</span>
                   </div>
                 </div>
               ) : currentOutput ? (
-                <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                <div className="text-sm text-t2 leading-relaxed whitespace-pre-wrap">
                   {currentOutput}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
+                <div className="flex items-center justify-center h-full text-t3 text-sm">
                   {t('clickRunPrompt')}
                 </div>
               )}
@@ -805,7 +805,7 @@ AI输出: ${truncatedOutput}
                   updateTemplateVariables(currentOutput);
                   setUserPrompt(currentOutput);
                 }}
-                className="mt-3 inline-flex items-center gap-2 text-xs text-[#98a971] hover:text-[#7a8259]"
+                className="mt-3 inline-flex items-center gap-2 text-xs text-accent hover:text-accent-hover"
               >
                 {t('useAsNextPrompt') || 'Use response as next prompt'}
               </button>

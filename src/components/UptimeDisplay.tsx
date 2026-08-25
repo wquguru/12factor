@@ -61,16 +61,16 @@ export default function UptimeDisplay() {
   
   // Return placeholder during SSR to avoid hydration mismatch
   if (!uptime) {
-    return <span className="text-stone-500">12Factor</span>;
+    return <span className="text-t3">12Factor</span>;
   }
   
   return (
     <span className="relative group">
-      <span className="text-stone-500 cursor-help" title={tooltip}>
+      <span className="text-t3 cursor-help" title={tooltip}>
         {milestone || uptime}
       </span>
       {milestone && (
-        <span className="absolute left-0 -top-8 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <span className="absolute left-0 -top-8 bg-warn-wash text-warn text-xs px-2 py-1 rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {milestone}
         </span>
       )}

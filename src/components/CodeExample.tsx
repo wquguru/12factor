@@ -24,16 +24,16 @@ export default function CodeExample({ title, code, explanation, language = 'pyth
   };
 
   return (
-    <div className="border border-stone-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 overflow-hidden">
+    <div className="border border-line rounded-lg bg-surface-1 overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 bg-stone-50 dark:bg-gray-800 border-b border-stone-200 dark:border-gray-700">
+      <div className="px-4 py-3 bg-surface-2 border-b border-line">
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-stone-900 dark:text-gray-100">
+          <h4 className="text-sm font-medium text-t1">
             {title}
           </h4>
           <button
             onClick={copyToClipboard}
-            className="inline-flex items-center gap-1.5 px-2 py-1 text-xs text-stone-600 dark:text-gray-400 hover:text-stone-900 dark:hover:text-gray-100 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2 py-1 text-xs text-t2 hover:text-t1 transition-colors"
           >
             {copied ? (
               <>
@@ -53,7 +53,7 @@ export default function CodeExample({ title, code, explanation, language = 'pyth
       {/* Code Block */}
       <div className="relative">
         <pre className="p-4 overflow-x-auto text-sm">
-          <code className={`language-${language} text-stone-800 dark:text-gray-200`}>
+          <code className={`language-${language} text-t1 `}>
             {code}
           </code>
         </pre>
@@ -61,8 +61,8 @@ export default function CodeExample({ title, code, explanation, language = 'pyth
 
       {/* Explanation */}
       {explanation && (
-        <div className="px-4 py-3 bg-stone-50 dark:bg-gray-800 border-t border-stone-200 dark:border-gray-700">
-          <p className="text-sm text-stone-600 dark:text-gray-400 leading-relaxed">
+        <div className="px-4 py-3 bg-surface-2 border-t border-line">
+          <p className="text-sm text-t2 leading-relaxed">
             {explanation}
           </p>
         </div>

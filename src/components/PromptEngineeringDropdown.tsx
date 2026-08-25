@@ -32,7 +32,7 @@ export default function PromptEngineeringDropdown() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsOpen(true)}
-        className="flex items-center text-sm font-medium text-[#98a971] dark:text-[#98a971] hover:text-[#7a8259] dark:hover:text-[#b4c383] transition-colors group"
+        className="flex items-center text-sm font-medium text-accent hover:text-accent-hover transition-colors group"
       >
         {t('more')}
         <ChevronDownIcon className={`h-4 w-4 ml-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -40,16 +40,16 @@ export default function PromptEngineeringDropdown() {
 
       {isOpen && (
         <div 
-          className="absolute left-0 mt-2 w-[720px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 z-50 overflow-hidden backdrop-blur-sm"
+          className="absolute left-0 mt-2 w-[720px] bg-surface-1 rounded-xl shadow-2xl border border-line z-50 overflow-hidden backdrop-blur-sm"
           onMouseLeave={() => setIsOpen(false)}
         >
           {/* Multi-column layout similar to reference image */}
-          <div className="grid grid-cols-3 divide-x divide-gray-200/50 dark:divide-gray-700/50">
+          <div className="grid grid-cols-3 divide-x divide-line">
             
             {/* First Column - Prompt Engineering */}
             <div className="p-6">
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-4">
+                <h3 className="text-sm font-semibold text-t3 uppercase tracking-wide mb-4">
                   {t('promptEngineering')}
                 </h3>
               </div>
@@ -61,10 +61,10 @@ export default function PromptEngineeringDropdown() {
                 className="block mb-3 group"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                   {tPE('learningPath')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tPE('learningPathDescription')}
                 </div>
               </Link>
@@ -108,10 +108,10 @@ export default function PromptEngineeringDropdown() {
                     className="block mb-3 group"
                     onClick={() => setIsOpen(false)}
                   >
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                    <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                       {getCourseTitle(course.content.id)}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-t3 mt-1">
                       {getCourseSummary(course.content.id).substring(0, 60)}...
                     </div>
                   </Link>
@@ -122,7 +122,7 @@ export default function PromptEngineeringDropdown() {
             {/* Second Column - 12Factor Principles */}
             <div className="p-6">
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-4">
+                <h3 className="text-sm font-semibold text-t3 uppercase tracking-wide mb-4">
                   {tNav('methodology')}
                 </h3>
               </div>
@@ -133,10 +133,10 @@ export default function PromptEngineeringDropdown() {
                 className="block mb-3 group"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                   {t('principles')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('principlesDescription')}
                 </div>
               </Link>
@@ -147,10 +147,10 @@ export default function PromptEngineeringDropdown() {
                 className="block mb-3 group"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                   {t('flashcards')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('flashcardsDescription')}
                 </div>
               </Link>
@@ -161,10 +161,10 @@ export default function PromptEngineeringDropdown() {
                 className="block mb-3 group"
                 onClick={() => setIsOpen(false)}
               >
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                   {t('quiz')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('quizDescription')}
                 </div>
               </Link>
@@ -173,7 +173,7 @@ export default function PromptEngineeringDropdown() {
             {/* Third Column - Resources */}
             <div className="p-6">
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-4">
+                <h3 className="text-sm font-semibold text-t3 uppercase tracking-wide mb-4">
                   {tNav('resources')}
                 </h3>
               </div>
@@ -184,28 +184,28 @@ export default function PromptEngineeringDropdown() {
                 rel="noopener noreferrer"
                 className="block mb-3 group"
               >
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-[#98a971] transition-colors">
+                <div className="text-sm font-medium text-t1 group-hover:text-accent transition-colors">
                   {tNav('githubRepo')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('githubRepoDescription')}
                 </div>
               </a>
 
               <div className="block mb-3 group">
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <div className="text-sm font-medium text-t3">
                   {tNav('apiDocs')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('comingSoon')}
                 </div>
               </div>
 
               <div className="block mb-3 group">
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <div className="text-sm font-medium text-t3">
                   {tNav('communityForum')}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <div className="text-xs text-t3 mt-1">
                   {tNav('comingSoon')}
                 </div>
               </div>

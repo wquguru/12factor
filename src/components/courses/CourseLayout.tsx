@@ -360,7 +360,7 @@ export default function CourseLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-bg">
       {/* Hero Section */}
       <div className="hero-gradient relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-24">
@@ -368,29 +368,29 @@ export default function CourseLayout() {
             <Link
               href="/prompt-engineering"
               locale={locale}
-              className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
+              className="inline-flex items-center text-hero-2 hover:text-hero mb-6 transition-colors"
             >
               <ArrowLeftIcon className="h-4 w-4 mr-2" />
               {t('backToLessons')}
             </Link>
             
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20">
-                <div className="text-white">
+              <div className="w-16 h-16 bg-hero-glass backdrop-blur-sm rounded-2xl flex items-center justify-center border border-hero-line">
+                <div className="text-hero">
                   {getCourseIcon(course.content.icon)}
                 </div>
               </div>
               <div>
-                <div className="text-white/70 text-sm font-medium uppercase tracking-wide">
+                <div className="text-hero-2 text-sm font-medium uppercase tracking-wide">
                   {t('integratedCourse')}
                 </div>
-                <h1 className="text-4xl md:text-5xl font-light text-white leading-tight">
+                <h1 className="text-4xl md:text-5xl font-light text-hero leading-tight">
                   {getCourseTitle(courseId)}
                 </h1>
               </div>
             </div>
             
-            <p className="text-xl text-white/90 max-w-3xl leading-relaxed font-light">
+            <p className="text-xl text-hero-2 max-w-3xl leading-relaxed font-light">
               {getCourseSummary(courseId)}
             </p>
           </div>
@@ -398,7 +398,7 @@ export default function CourseLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="py-16 bg-white dark:bg-gray-900">
+      <div className="py-16 bg-bg">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Card-based Learning */}
           {learningContent.length > 0 && (
@@ -419,7 +419,7 @@ export default function CourseLayout() {
           )}
 
           {/* Course Navigation */}
-          <section className="mt-16 pt-12 border-t border-gray-200 dark:border-gray-700">
+          <section className="mt-16 pt-12 border-t border-line">
             <div className="flex justify-center">
               <div className="flex items-center gap-8">
                 {prevCourse && (
@@ -429,16 +429,16 @@ export default function CourseLayout() {
                       params: { course: prevCourseId!.toString() }
                     }}
                     locale={locale}
-                    className="flex items-center gap-3 px-6 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-[#98a971]/30 dark:hover:border-[#98a971]/30 hover:shadow-md transition-all"
+                    className="flex items-center gap-3 px-6 py-3 bg-bg rounded-xl border border-line hover:border-accent hover:shadow-md transition-all"
                   >
-                    <ArrowLeftIcon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                    <span className="text-gray-700 dark:text-gray-300">{t('previousCourse')}</span>
+                    <ArrowLeftIcon className="h-4 w-4 text-t2" />
+                    <span className="text-t2">{t('previousCourse')}</span>
                   </Link>
                 )}
                 
-                <div className="flex items-center gap-2 px-4 py-2 bg-[#98a971]/10 rounded-full">
-                  <div className="w-2 h-2 bg-[#98a971] rounded-full"></div>
-                  <span className="text-sm text-[#98a971] font-medium">
+                <div className="flex items-center gap-2 px-4 py-2 bg-accent-wash rounded-full">
+                  <div className="w-2 h-2 bg-accent-solid rounded-full"></div>
+                  <span className="text-sm text-accent font-medium">
                     {courseIndex + 1} / {allCourseIds.length}
                   </span>
                 </div>
@@ -450,10 +450,10 @@ export default function CourseLayout() {
                       params: { course: nextCourseId!.toString() }
                     }}
                     locale={locale}
-                    className="flex items-center gap-3 px-6 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-[#98a971]/30 dark:hover:border-[#98a971]/30 hover:shadow-md transition-all"
+                    className="flex items-center gap-3 px-6 py-3 bg-bg rounded-xl border border-line hover:border-accent hover:shadow-md transition-all"
                   >
-                    <span className="text-gray-700 dark:text-gray-300">{t('nextCourse')}</span>
-                    <ArrowLeftIcon className="h-4 w-4 text-gray-600 dark:text-gray-400 rotate-180" />
+                    <span className="text-t2">{t('nextCourse')}</span>
+                    <ArrowLeftIcon className="h-4 w-4 text-t2 rotate-180" />
                   </Link>
                 )}
               </div>

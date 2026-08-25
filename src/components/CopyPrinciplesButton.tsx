@@ -77,12 +77,12 @@ export default function CopyPrinciplesButton({
     const baseStyles = 'flex items-center text-sm font-medium transition-all duration-200';
 
     if (copyStatus === 'success') {
-      return `${baseStyles} text-green-600 dark:text-green-400`;
+      return `${baseStyles} text-accent `;
     }
     if (copyStatus === 'error') {
-      return `${baseStyles} text-red-600 dark:text-red-400`;
+      return `${baseStyles} text-danger `;
     }
-    return `${baseStyles} text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100`;
+    return `${baseStyles} text-t2 hover:text-t1`;
   };
 
   return (

@@ -63,7 +63,7 @@ export default function SocialShare({ className = '' }: SocialShareProps) {
         <button
           key={platform.name}
           onClick={platform.handle}
-          className="p-2 text-stone-600 dark:text-stone-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-all duration-200"
+          className="p-2 text-t2 hover:text-info hover:bg-info-wash rounded-full transition-all duration-200"
           title={`Follow @wquguru on ${platform.name}`}
         >
           <svg 

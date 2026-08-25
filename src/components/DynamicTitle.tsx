@@ -33,7 +33,7 @@ export default function DynamicTitle() {
 
   return (
     <motion.h1 
-      className="hero-text text-white mb-8"
+      className="hero-text text-hero mb-8"
       key={titleState}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}

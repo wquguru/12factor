@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { CheckIcon, CrossIcon } from '@/components/icons';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { principles } from '@/data/principles';
@@ -42,7 +43,7 @@ function FillBlankQuestion({ question, onAnswer }: FillBlankQuestionProps) {
   
   return (
     <div className="space-y-4">
-      <div className="text-lg text-gray-700 dark:text-gray-300">
+      <div className="text-lg text-t2">
         {question.text.split('___').map((part, index) => (
           <span key={index}>
             {part}
@@ -51,7 +52,7 @@ function FillBlankQuestion({ question, onAnswer }: FillBlankQuestionProps) {
                 type="text"
                 value={blanks[index] || ''}
                 onChange={(e) => updateBlank(index, e.target.value)}
-                className="inline-block mx-2 px-3 py-1 border-b-2 border-[#95a76f] dark:border-[#95a76f]/70 bg-transparent dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#95a76f]/80 dark:focus:border-[#95a76f]/60 min-w-[100px] text-center"
+                className="inline-block mx-2 px-3 py-1 border-b-2 border-accent bg-transparent text-t1 min-w-[100px] text-center"
                 placeholder="..."
               />
             )}
@@ -619,16 +620,16 @@ export default function QuizPage() {
   // Quiz mode selection screen
   if (showQuizModeSelect) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-bg">
         {/* Hero Section */}
         <div className="hero-gradient relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-32 sm:pb-24">
             <div className="max-w-5xl">
-              <h1 className="hero-text text-white mb-8">
+              <h1 className="hero-text text-hero mb-8">
                 {tQuiz('chooseChallenge')}
               </h1>
               
-              <p className="text-xl text-white/90 mb-12 max-w-3xl leading-relaxed font-light">
+              <p className="text-xl text-hero-2 mb-12 max-w-3xl leading-relaxed font-light">
                 {tQuiz('selectModeDescription')}
               </p>
               
@@ -636,7 +637,7 @@ export default function QuizPage() {
                 <Link
                   href="/principles"
                   locale={locale}
-                  className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="btn-secondary btn-on-hero"
                 >
                   {t('flashcards.studyPrinciples')}
                 </Link>
@@ -644,7 +645,7 @@ export default function QuizPage() {
                 <Link
                   href="/flashcards"
                   locale={locale}
-                  className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="btn-secondary btn-on-hero"
                 >
                   {t('principles.practiceWithFlashcards')}
                 </Link>
@@ -658,13 +659,13 @@ export default function QuizPage() {
               onClick={() => {
                 document.getElementById('quiz-modes')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-300 hover:scale-110"
+              className="group flex flex-col items-center text-hero-2 hover:text-hero transition-all duration-300 hover:scale-110"
               aria-label="Scroll to quiz modes"
             >
               <div className="text-xs sm:text-sm font-medium mb-2 opacity-80 group-hover:opacity-100 whitespace-nowrap px-2">
                 {tQuiz('chooseMode')}
               </div>
-              <div className="w-10 h-10 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:border-white/50 transition-all duration-300">
+              <div className="w-10 h-10 rounded-full border border-hero-line bg-hero-glass backdrop-blur-sm flex items-center justify-center group-hover:bg-hero-glass group-hover:border-hero-line transition-all duration-300">
                 <ChevronDownIcon className="h-5 w-5 animate-bounce" />
               </div>
             </button>
@@ -672,13 +673,13 @@ export default function QuizPage() {
         </div>
 
         {/* Quiz Modes Section */}
-        <div id="quiz-modes" className="py-32 bg-white dark:bg-gray-900">
+        <div id="quiz-modes" className="py-32 bg-bg">
           <div className="max-w-6xl mx-auto px-6 lg:px-8">
             <div className="mb-16">
-              <h2 className="text-6xl md:text-7xl font-light text-stone-900 dark:text-gray-100 mb-8 leading-tight">
+              <h2 className="text-6xl md:text-7xl font-light text-t1 mb-8 leading-tight">
                 {tQuiz('quizModes')}
               </h2>
-              <p className="text-lg text-stone-600 dark:text-gray-400 max-w-3xl font-light leading-relaxed">
+              <p className="text-lg text-t2 max-w-3xl font-light leading-relaxed">
                 {tQuiz('chooseChallengeLevel')}
               </p>
             </div>
@@ -691,17 +692,17 @@ export default function QuizPage() {
                 onClick={() => startQuiz('normal')}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-[#95a76f]/20 dark:bg-[#95a76f]/10 rounded-2xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-[#95a76f] dark:bg-[#95a76f]/80 rounded-lg flex items-center justify-center">
-                      <div className="w-4 h-4 bg-white dark:bg-gray-900 rounded-sm opacity-80"></div>
+                  <div className="w-16 h-16 bg-accent-wash rounded-2xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-accent-solid rounded-lg flex items-center justify-center">
+                      <div className="w-4 h-4 bg-surface-1 rounded-sm opacity-80"></div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-medium text-stone-900 dark:text-gray-100 mb-1">{tQuiz('normalMode')}</h3>
-                    <div className="text-sm text-[#95a76f] font-medium">{tQuiz('normalModeSubtitle')}</div>
+                    <h3 className="text-2xl font-medium text-t1 mb-1">{tQuiz('normalMode')}</h3>
+                    <div className="text-sm text-accent font-medium">{tQuiz('normalModeSubtitle')}</div>
                   </div>
                 </div>
-                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                <p className="text-t2 text-sm leading-relaxed">
                   {tQuiz('normalModeDescription')}
                 </p>
               </motion.div>
@@ -713,17 +714,17 @@ export default function QuizPage() {
                 onClick={() => startQuiz('timed')}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-amber-600 dark:bg-amber-700 rounded-lg flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-white dark:border-gray-900 rounded-full"></div>
+                  <div className="w-16 h-16 bg-warn-wash rounded-2xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-warn rounded-lg flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-hero rounded-full"></div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-medium text-stone-900 dark:text-gray-100 mb-1">{tQuiz('timedMode')}</h3>
-                    <div className="text-sm text-amber-600 font-medium">{tQuiz('timedModeSubtitle')}</div>
+                    <h3 className="text-2xl font-medium text-t1 mb-1">{tQuiz('timedMode')}</h3>
+                    <div className="text-sm text-warn font-medium">{tQuiz('timedModeSubtitle')}</div>
                   </div>
                 </div>
-                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                <p className="text-t2 text-sm leading-relaxed">
                   {tQuiz('timedModeDescription')}
                 </p>
               </motion.div>
@@ -735,17 +736,17 @@ export default function QuizPage() {
                 onClick={() => startQuiz('challenge')}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/20 rounded-2xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-rose-600 dark:bg-rose-700 rounded-lg flex items-center justify-center">
-                      <div className="w-3 h-4 bg-white dark:bg-gray-900 rounded-sm"></div>
+                  <div className="w-16 h-16 bg-danger-wash rounded-2xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-danger rounded-lg flex items-center justify-center">
+                      <div className="w-3 h-4 bg-surface-1 rounded-sm"></div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-medium text-stone-900 dark:text-gray-100 mb-1">{tQuiz('challengeMode')}</h3>
-                    <div className="text-sm text-rose-600 font-medium">{tQuiz('challengeModeSubtitle')}</div>
+                    <h3 className="text-2xl font-medium text-t1 mb-1">{tQuiz('challengeMode')}</h3>
+                    <div className="text-sm text-danger font-medium">{tQuiz('challengeModeSubtitle')}</div>
                   </div>
                 </div>
-                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                <p className="text-t2 text-sm leading-relaxed">
                   {tQuiz('challengeModeDescription')}
                 </p>
               </motion.div>
@@ -757,17 +758,17 @@ export default function QuizPage() {
                 onClick={() => startQuiz('adaptive')}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-teal-100 dark:bg-teal-900/20 rounded-2xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-teal-600 dark:bg-teal-700 rounded-lg flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white dark:bg-gray-900 rounded-full"></div>
+                  <div className="w-16 h-16 bg-stage1-wash rounded-2xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-stage1 rounded-lg flex items-center justify-center">
+                      <div className="w-2 h-2 bg-surface-1 rounded-full"></div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-medium text-stone-900 dark:text-gray-100 mb-1">{tQuiz('adaptiveMode')}</h3>
-                    <div className="text-sm text-teal-600 font-medium">{tQuiz('adaptiveModeSubtitle')}</div>
+                    <h3 className="text-2xl font-medium text-t1 mb-1">{tQuiz('adaptiveMode')}</h3>
+                    <div className="text-sm text-stage1 font-medium">{tQuiz('adaptiveModeSubtitle')}</div>
                   </div>
                 </div>
-                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                <p className="text-t2 text-sm leading-relaxed">
                   {tQuiz('adaptiveModeDescription')}
                 </p>
               </motion.div>
@@ -783,16 +784,16 @@ export default function QuizPage() {
     const percentage = Math.round((score / questions.length) * 100);
 
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-bg">
         {/* Hero Section for Results */}
         <div className="hero-gradient relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-40 sm:pb-32">
             <div className="max-w-5xl mx-auto text-center">
-              <h1 className="hero-text text-white mb-8">
+              <h1 className="hero-text text-hero mb-8">
                 {tQuiz('quizComplete')}
               </h1>
               
-              <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+              <p className="text-xl text-hero-2 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
                 {tQuiz('modeResults', { mode: quizMode.charAt(0).toUpperCase() + quizMode.slice(1) })}
               </p>
               
@@ -800,7 +801,7 @@ export default function QuizPage() {
                 <Link
                   href="/principles"
                   locale={locale}
-                  className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="btn-secondary btn-on-hero"
                 >
                   {t('flashcards.studyPrinciples')}
                 </Link>
@@ -808,7 +809,7 @@ export default function QuizPage() {
                 <Link
                   href="/flashcards"
                   locale={locale}
-                  className="btn-secondary bg-white/10 dark:bg-gray-800/50 border-white/30 dark:border-gray-600 text-white dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+                  className="btn-secondary btn-on-hero"
                 >
                   {t('principles.practiceWithFlashcards')}
                 </Link>
@@ -822,13 +823,13 @@ export default function QuizPage() {
               onClick={() => {
                 document.getElementById('results-content')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="group flex flex-col items-center text-white/70 hover:text-white transition-all duration-300 hover:scale-110"
+              className="group flex flex-col items-center text-hero-2 hover:text-hero transition-all duration-300 hover:scale-110"
               aria-label="Scroll to results"
             >
               <div className="text-xs sm:text-sm font-medium mb-2 opacity-80 group-hover:opacity-100 whitespace-nowrap px-2">
                 {tQuiz('viewResults')}
               </div>
-              <div className="w-10 h-10 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 group-hover:border-white/50 transition-all duration-300">
+              <div className="w-10 h-10 rounded-full border border-hero-line bg-hero-glass backdrop-blur-sm flex items-center justify-center group-hover:bg-hero-glass group-hover:border-hero-line transition-all duration-300">
                 <ChevronDownIcon className="h-5 w-5 animate-bounce" />
               </div>
             </button>
@@ -836,7 +837,7 @@ export default function QuizPage() {
         </div>
 
         {/* Results Section */}
-        <div id="results-content" className="py-32 bg-white dark:bg-gray-900">
+        <div id="results-content" className="py-32 bg-bg">
           <div className="max-w-2xl mx-auto px-6 lg:px-8">
             <motion.div
               initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
@@ -845,42 +846,42 @@ export default function QuizPage() {
               className="modern-card text-center"
             >
             <div className="mb-8">
-              <div className="text-lg text-stone-600 dark:text-gray-400 mb-6">
+              <div className="text-lg text-t2 mb-6">
                 {tQuiz('performanceSummary')}
               </div>
             </div>
             
             <div className="mb-6">
-              <div className="text-6xl font-bold text-[#95a76f] mb-2">
+              <div className="text-6xl font-bold text-accent mb-2">
                 {percentage}%
               </div>
-              <div className="text-lg text-gray-600 dark:text-gray-300">
+              <div className="text-lg text-t2">
                 {t('quiz.score')}: {score} / {questions.length}
               </div>
             </div>
 
             <div className="space-y-4 mb-8">
               {percentage >= 80 && (
-                <div className="text-[#95a76f] font-semibold text-lg">{tQuiz('excellent')}</div>
+                <div className="text-accent font-semibold text-lg">{tQuiz('excellent')}</div>
               )}
               {percentage >= 60 && percentage < 80 && (
-                <div className="text-amber-600 font-semibold text-lg">{tQuiz('goodJob')}</div>
+                <div className="text-warn font-semibold text-lg">{tQuiz('goodJob')}</div>
               )}
               {percentage < 60 && (
-                <div className="text-rose-600 font-semibold text-lg">{tQuiz('keepLearning')}</div>
+                <div className="text-danger font-semibold text-lg">{tQuiz('keepLearning')}</div>
               )}
               
               {streak > 0 && (
-                <div className="bg-[#95a76f]/10 dark:bg-[#95a76f]/20 rounded-lg p-4">
-                  <div className="text-[#95a76f] dark:text-[#95a76f]/80 font-semibold">
+                <div className="bg-accent-wash rounded-lg p-4">
+                  <div className="text-accent font-semibold">
                     {tQuiz('maxStreak', { streak })}
                   </div>
                 </div>
               )}
               
               {quizMode === 'challenge' && (
-                <div className="bg-rose-50 dark:bg-rose-900/20 rounded-lg p-4">
-                  <div className="text-rose-600 dark:text-rose-400 font-semibold">
+                <div className="bg-danger-wash rounded-lg p-4">
+                  <div className="text-danger font-semibold">
                     {tQuiz('challengeBonus', { points: Math.floor(percentage * 0.1) })}
                   </div>
                 </div>
@@ -889,7 +890,7 @@ export default function QuizPage() {
 
             <button
               onClick={resetQuiz}
-              className="btn-primary"
+              className="btn-primary btn-hero-primary"
             >
               {t('quiz.retry')}
             </button>
@@ -913,22 +914,22 @@ export default function QuizPage() {
                 key={index}
                 onClick={() => handleAnswerSelect(index)}
                 className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                  selectedAnswer === index
-                    ? 'border-[#95a76f] bg-[#95a76f]/10 dark:bg-[#95a76f]/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-[#95a76f]/50 dark:hover:border-[#95a76f]/60'
-                }`}
+ selectedAnswer === index
+ ? 'border-accent bg-accent-wash '
+ : 'border-line hover:border-accent'
+ }`}
               >
                 <div className="flex items-center">
                   <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                    selectedAnswer === index
-                      ? 'border-[#95a76f] bg-[#95a76f]'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}>
+ selectedAnswer === index
+ ? 'border-accent bg-accent-solid'
+ : 'border-line-control '
+ }`}>
                     {selectedAnswer === index && (
-                      <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5" />
+                      <div className="w-2 h-2 bg-surface-1 rounded-full mx-auto mt-0.5" />
                     )}
                   </div>
-                  <span className="text-gray-700 dark:text-gray-300">{option}</span>
+                  <span className="text-t2">{option}</span>
                 </div>
               </button>
             ))}
@@ -943,13 +944,13 @@ export default function QuizPage() {
                 key={index}
                 onClick={() => handleAnswerSelect(index)}
                 className={`p-6 text-center rounded-xl border-2 transition-all duration-200 ${
-                  selectedAnswer === index
-                    ? 'border-[#95a76f] bg-[#95a76f]/10 dark:bg-[#95a76f]/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-[#95a76f]/50 dark:hover:border-[#95a76f]/60'
-                }`}
+ selectedAnswer === index
+ ? 'border-accent bg-accent-wash '
+ : 'border-line hover:border-accent'
+ }`}
               >
-                <div className="text-2xl mb-2">{index === 0 ? '✓' : '✗'}</div>
-                <div className="font-semibold text-gray-700 dark:text-gray-300">{option}</div>
+                <div className="mb-2 flex justify-center">{index === 0 ? <CheckIcon className="w-6 h-6" /> : <CrossIcon className="w-6 h-6" />}</div>
+                <div className="font-semibold text-t2">{option}</div>
               </button>
             ))}
           </div>
@@ -959,9 +960,9 @@ export default function QuizPage() {
         return (
           <div>
             {question.scenario && (
-              <div className="bg-[#95a76f]/10 dark:bg-[#95a76f]/20 rounded-lg p-4 mb-6">
-                <div className="text-[#95a76f] dark:text-[#95a76f]/90 font-medium mb-2">{tQuiz('scenario')}:</div>
-                <div className="text-[#95a76f]/80 dark:text-[#95a76f]/70">{question.scenario}</div>
+              <div className="bg-accent-wash rounded-lg p-4 mb-6">
+                <div className="text-accent font-medium mb-2">{tQuiz('scenario')}:</div>
+                <div className="text-accent">{question.scenario}</div>
               </div>
             )}
             <div className="space-y-3">
@@ -970,12 +971,12 @@ export default function QuizPage() {
                   key={index}
                   onClick={() => handleAnswerSelect(index)}
                   className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
-                    selectedAnswer === index
-                      ? 'border-[#95a76f] bg-[#95a76f]/10 dark:bg-[#95a76f]/20'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-[#95a76f]/50 dark:hover:border-[#95a76f]/60'
-                  }`}
+ selectedAnswer === index
+ ? 'border-accent bg-accent-wash '
+ : 'border-line hover:border-accent'
+ }`}
                 >
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">{option}</span>
+                  <span className="text-t2 font-medium">{option}</span>
                 </button>
               ))}
             </div>
@@ -993,45 +994,45 @@ export default function QuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-bg">
       {/* Quiz Header */}
-      <div className="bg-stone-50 dark:bg-gray-800 border-b border-stone-200 dark:border-gray-700">
+      <div className="bg-surface-2 border-b border-line">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <button
                 onClick={resetQuiz}
-                className="inline-flex items-center text-stone-600 dark:text-gray-400 hover:text-stone-900 dark:hover:text-gray-200 text-sm font-medium"
+                className="inline-flex items-center text-t2 hover:text-t1 text-sm font-medium"
               >
                 <ArrowLeftIcon className="h-4 w-4 mr-1" />
 {tQuiz('backToModes')}
               </button>
-              <div className="text-sm font-medium text-stone-500 dark:text-gray-500">
+              <div className="text-sm font-medium text-t3">
 {tQuiz('modeLabel', { mode: quizMode.charAt(0).toUpperCase() + quizMode.slice(1) })}
               </div>
             </div>
             <div className="flex items-center gap-4">
               {quizMode === 'timed' && (
                 <div className={`text-lg font-bold px-4 py-2 rounded-full ${
-                  timeLeft <= 5 
-                    ? 'text-rose-600 bg-rose-100' 
-                    : 'text-amber-600 bg-amber-100'
-                }`}>
+ timeLeft <= 5 
+ ? 'text-danger bg-danger-wash' 
+ : 'text-warn bg-warn-wash'
+ }`}>
                   {timeLeft}s
                 </div>
               )}
               {streak > 1 && (
-                <div className="text-lg font-bold text-[#95a76f] bg-[#95a76f]/20 px-4 py-2 rounded-full">
+                <div className="text-lg font-bold text-accent bg-accent-wash px-4 py-2 rounded-full">
                   {streak} streak
                 </div>
               )}
             </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-light text-stone-900 dark:text-gray-100 mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-light text-t1 mb-4 leading-tight">
 {tQuiz('interactiveQuiz')}
           </h1>
-          <div className="text-lg text-stone-600 dark:text-gray-400">
+          <div className="text-lg text-t2">
 {tQuiz('questionCount', { current: currentQuestion + 1, total: questions.length })}
           </div>
         </div>
@@ -1043,20 +1044,20 @@ export default function QuizPage() {
 
           {/* Progress bar */}
           <div className="mb-6">
-            <div className="w-full bg-stone-200 dark:bg-gray-700 rounded-full h-3">
+            <div className="w-full bg-surface-3 rounded-full h-3">
               <div 
                 className={`h-3 rounded-full transition-all duration-300 shadow-sm ${
-                  quizMode === 'timed' ? 'bg-gradient-to-r from-amber-500 to-amber-600' : 
-                  quizMode === 'challenge' ? 'bg-gradient-to-r from-rose-500 to-rose-600' :
-                  'bg-gradient-to-r from-[#95a76f] to-[#95a76f]/80'
-                }`}
+ quizMode === 'timed' ? 'bg-warn' : 
+ quizMode === 'challenge' ? 'bg-danger' :
+ 'bg-accent-solid'
+ }`}
                 style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
               />
             </div>
             {quizMode === 'timed' && timeLeft <= 10 && (
-              <div className="w-full bg-red-200 rounded-full h-2 mt-2">
+              <div className="w-full bg-danger-wash rounded-full h-2 mt-2">
                 <div 
-                  className="bg-red-600 h-2 rounded-full transition-all duration-100"
+                  className="bg-danger h-2 rounded-full transition-all duration-100"
                   style={{ width: `${(timeLeft / 30) * 100}%` }}
                 />
               </div>
@@ -1073,15 +1074,15 @@ export default function QuizPage() {
             style={{ transform: 'translateZ(0)', willChange: 'opacity' }}
           >
             <div className="flex justify-between items-start mb-8">
-              <h2 className="text-xl font-medium text-stone-900 dark:text-gray-100 leading-relaxed">
+              <h2 className="text-xl font-medium text-t1 leading-relaxed">
                 {question.text}
               </h2>
               {question.difficulty && (
                 <div className={`px-3 py-1 rounded-full text-xs font-medium ml-4 flex-shrink-0 ${
-                  question.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
-                  question.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-red-100 text-red-700'
-                }`}>
+ question.difficulty === 'easy' ? 'bg-accent-wash text-accent' :
+ question.difficulty === 'medium' ? 'bg-warn-wash text-warn' :
+ 'bg-danger-wash text-danger'
+ }`}>
                   {tQuiz(`difficulty.${question.difficulty}`)}
                 </div>
               )}
@@ -1090,7 +1091,7 @@ export default function QuizPage() {
           {renderQuestion()}
 
             <div className="flex justify-between items-center mt-12">
-              <div className="text-sm text-stone-500 dark:text-gray-500">
+              <div className="text-sm text-t3">
                 {tQuiz('questionType', { type: question.type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) })}
               </div>
               <button
@@ -1098,11 +1099,11 @@ export default function QuizPage() {
                 disabled={selectedAnswer === null}
                 className={`px-8 py-3 rounded-full font-medium transition-all duration-200 ${
                   selectedAnswer !== null
-                    ? `${quizMode === 'timed' ? 'bg-amber-600 hover:bg-amber-700' : 
-                        quizMode === 'challenge' ? 'bg-rose-600 hover:bg-rose-700' :
-                        'bg-[#95a76f] hover:bg-[#95a76f]/90'} text-white shadow-lg hover:shadow-xl hover:scale-105`
-                    : 'bg-stone-300 dark:bg-gray-700 text-stone-500 dark:text-gray-500 cursor-not-allowed'
-                }`}
+                    ? `${quizMode === 'timed' ? 'bg-warn hover:opacity-90' : 
+                        quizMode === 'challenge' ? 'bg-danger hover:opacity-90' :
+                        'bg-accent-solid hover:bg-accent-hover'} text-accent-on shadow-lg hover:shadow-xl hover:scale-105`
+ : 'bg-surface-3 text-t3 cursor-not-allowed'
+ }`}
               >
 {currentQuestion < questions.length - 1 ? tQuiz('nextQuestion') : tQuiz('submitQuiz')}
               </button>

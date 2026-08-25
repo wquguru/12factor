@@ -13,7 +13,7 @@ export default function GitHubCorner({
         href={repository}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative block w-20 h-20 bg-[#a4b67a]/80 hover:bg-[#a4b67a]/90 transition-all duration-300 backdrop-blur-sm"
+        className="group relative block w-20 h-20 bg-accent-wash hover:bg-accent-washHover transition-all duration-300 backdrop-blur-sm"
         aria-label="View source on GitHub"
         style={{
           clipPath: 'polygon(0 0, 100% 0, 100% 100%)'
@@ -22,7 +22,7 @@ export default function GitHubCorner({
         {/* GitHub Icon */}
         <div className="absolute top-3 right-3">
           <svg 
-            className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-300" 
+            className="w-6 h-6 text-accent-on group-hover:scale-110 transition-transform duration-300" 
             fill="currentColor" 
             viewBox="0 0 20 20"
           >
@@ -35,7 +35,7 @@ export default function GitHubCorner({
         </div>
         
         {/* Tooltip */}
-        <div className="absolute top-12 right-2 bg-[#a4b67a] text-white text-xs px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-lg">
+        <div className="absolute top-12 right-2 bg-accent-solid text-accent-on text-xs px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-lg">
           ⭐ Star on GitHub
         </div>
       </a>

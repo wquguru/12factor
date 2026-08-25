@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -12,66 +12,54 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
-  const [, setMounted] = useState(false);
+const prefersDark = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+/**
+ * `.dark` on <html> is the single source of truth for the theme — the CSS has
+ * no prefers-color-scheme fallback, so nothing can disagree with this class.
+ */
+function apply(theme: Theme): 'light' | 'dark' {
+  const resolved: 'light' | 'dark' =
+    theme === 'system' ? (prefersDark() ? 'dark' : 'light') : theme;
+  document.documentElement.classList.toggle('dark', resolved === 'dark');
+  return resolved;
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>('system');
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+
+  // Adopt the stored preference. The inline <head> script has already applied
+  // the correct class, so this only syncs React state with the DOM.
   useEffect(() => {
-    setMounted(true);
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
-    
-    // Set initial resolved theme based on current state
-    const root = document.documentElement;
-    setResolvedTheme(root.classList.contains('dark') ? 'dark' : 'light');
+    const stored = localStorage.getItem('theme') as Theme | null;
+    const initial: Theme =
+      stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+    setThemeState(initial);
+    setResolvedTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
   }, []);
 
+  // Follow the OS while (and only while) the preference is "system".
   useEffect(() => {
-    const root = document.documentElement;
-    
-    // Save theme to localStorage and cookie
-    localStorage.setItem('theme', theme);
-    document.cookie = `theme=${theme};path=/;max-age=31536000;SameSite=Lax`;
-
-    if (theme === 'system') {
-      // Remove forced theme classes
-      root.classList.remove('light', 'dark');
-      
-      // Check system preference
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const isDark = mediaQuery.matches;
-      setResolvedTheme(isDark ? 'dark' : 'light');
-      
-      // Apply the system preference
-      if (isDark) {
-        root.classList.add('dark');
-      }
-      
-      // Listen for system theme changes
-      const handleChange = (e: MediaQueryListEvent) => {
-        setResolvedTheme(e.matches ? 'dark' : 'light');
-        if (e.matches) {
-          root.classList.add('dark');
-        } else {
-          root.classList.remove('dark');
-        }
-      };
-      
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      // Force specific theme
-      root.classList.remove('light', 'dark');
-      if (theme === 'dark') {
-        root.classList.add('dark');
-      }
-      setResolvedTheme(theme);
-    }
+    if (theme !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => setResolvedTheme(apply('system'));
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, [theme]);
+
+  const setTheme = useCallback((next: Theme) => {
+    setThemeState(next);
+    setResolvedTheme(apply(next));
+    try {
+      localStorage.setItem('theme', next);
+      document.cookie = `theme=${next};path=/;max-age=31536000;SameSite=Lax`;
+    } catch {
+      // Private mode / blocked storage: the theme still applies for this view.
+    }
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>

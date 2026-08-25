@@ -16,22 +16,22 @@ export default function FourQuadrantDiagram() {
   ];
 
   const colors = [
-    'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-700',
-    'bg-green-100 text-green-800 border-green-300 dark:bg-green-900 dark:text-green-300 dark:border-green-700',
-    'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-700',
-    'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-300 dark:border-orange-700',
+    'bg-stage1-wash text-stage1 border-stage1',
+    'bg-stage2-wash text-stage2 border-stage2',
+    'bg-stage3-wash text-stage3 border-stage3',
+    'bg-stage4-wash text-stage4 border-stage4',
   ];
 
   return (
     <div className="relative w-full aspect-square max-w-2xl mx-auto">
       {/* Center circle with arrows */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-2 border-gray-300 dark:border-gray-600">
+        <div className="w-32 h-32 rounded-full bg-surface-2 flex items-center justify-center border-2 border-line-control">
           <div className="text-center">
-            <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <div className="text-sm font-semibold text-t2">
               AI-Human
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-t3">
               Collaboration
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function FourQuadrantDiagram() {
               <polygon
                 points="0 0, 10 3.5, 0 7"
                 fill="currentColor"
-                className="text-gray-400"
+                className="text-t3"
               />
             </marker>
           </defs>
@@ -63,7 +63,7 @@ export default function FourQuadrantDiagram() {
             strokeWidth="2"
             fill="none"
             markerEnd="url(#arrowhead)"
-            className="text-gray-400"
+            className="text-t3"
           />
           <path
             d="M 25 75 Q 25 125 75 125"
@@ -71,7 +71,7 @@ export default function FourQuadrantDiagram() {
             strokeWidth="2"
             fill="none"
             markerEnd="url(#arrowhead)"
-            className="text-gray-400"
+            className="text-t3"
           />
           <path
             d="M 75 125 Q 125 125 125 75"
@@ -79,7 +79,7 @@ export default function FourQuadrantDiagram() {
             strokeWidth="2"
             fill="none"
             markerEnd="url(#arrowhead)"
-            className="text-gray-400"
+            className="text-t3"
           />
           <path
             d="M 125 75 Q 125 25 75 25"
@@ -87,7 +87,7 @@ export default function FourQuadrantDiagram() {
             strokeWidth="2"
             fill="none"
             markerEnd="url(#arrowhead)"
-            className="text-gray-400"
+            className="text-t3"
           />
         </svg>
       </div>

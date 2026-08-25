@@ -71,7 +71,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages} locale={locale}>
       <ThemeProvider>
         <WebViewProvider>
-          <div className="min-h-screen bg-white dark:bg-gray-900">
+          <div className="min-h-screen bg-bg">
             <Navigation />
             <GitHubCorner />
             <main>{children}</main>
